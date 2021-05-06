@@ -13,11 +13,20 @@
         android:text="Hello World!"
         android:layout_centerInParent="true"/>
 
-    <Button
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Upload"
-        android:id="@+id/uploadBtn"
-        />
+        android:id="@+id/tempImg"
+        android:layout_below="@+id/txtUser"
+        android:layout_centerInParent="true"/>
 
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="20dp"
+        android:src="@drawable/ic_baseline_add_24"/>
 </RelativeLayout>

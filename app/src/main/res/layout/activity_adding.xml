@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddingActivity">
+
+    <LinearLayout
+        android:id="@+id/inputHolder"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:hint="Year"
+            android:id="@+id/yearEdit"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"/>
+        <com.google.android.material.textfield.TextInputEditText
+            android:hint="Price"
+            android:id="@+id/priceEdit"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"/>
+        <com.google.android.material.textfield.TextInputEditText
+            android:hint="Phone"
+            android:id="@+id/phoneEdit"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"/>
+        <com.google.android.material.textfield.TextInputEditText
+            android:hint="Description"
+            android:id="@+id/descEdit"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <com.google.android.material.button.MaterialButton
+        android:layout_below="@+id/inputHolder"
+        android:id="@+id/uploadImagesBtn"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Upload images"
+        android:layout_centerHorizontal="true"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_below="@+id/uploadImagesBtn"
+        android:id="@+id/uploadAdBtn"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:text="Publish Ad"
+        android:layout_centerHorizontal="true"/>
+
+
+</RelativeLayout>

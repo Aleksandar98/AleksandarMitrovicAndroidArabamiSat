@@ -43,20 +43,28 @@ object AuthRepository{
 
     }
 
-    fun signInUserFacebook(accessToken: AccessToken?){
+    fun signInUserFacebook(accessToken: AccessToken?):MutableLiveData<User>{
+        lateinit var logedInUser:User
+        val signInUser:MutableLiveData<User> = MutableLiveData<User>()
         val credential = FacebookAuthProvider.getCredential(accessToken!!.token)
         firebaseAuth.signInWithCredential(credential)
             .addOnSuccessListener { authResult ->
                 val email : String? = authResult.user.email
+                val displayName : String? = authResult.user.displayName
+                logedInUser = User(email,displayName)
+                signInUser.value = logedInUser
                 Log.d(TAG, "handleFaceBookAccessToken: ${authResult.user.displayName}")
 
             }
             .addOnFailureListener{ e ->
                 Log.d(TAG, "handleFaceBookAccessToken: ${e.message}")
             }
+        return signInUser
     }
 
-    fun signInUserGoogle(idToken: String){
+    fun signInUserGoogle(idToken: String): MutableLiveData<User>{
+        lateinit var logedInUser:User
+        val signInUser:MutableLiveData<User> = MutableLiveData<User>()
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         firebaseAuth.signInWithCredential(credential)
             .addOnCompleteListener() { task ->
@@ -64,6 +72,8 @@ object AuthRepository{
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithCredential:success")
                     val user = firebaseAuth.currentUser
+                    logedInUser = User(user.email,user.displayName)
+                    signInUser.value = logedInUser
                     Log.d(TAG, "onStart: $user")
                     //startActivity(mainActIntent)
                     ///updateUI(currentUser)
@@ -73,5 +83,6 @@ object AuthRepository{
                     //updateUI(null)
                 }
             }
+        return signInUser
     }
 }
