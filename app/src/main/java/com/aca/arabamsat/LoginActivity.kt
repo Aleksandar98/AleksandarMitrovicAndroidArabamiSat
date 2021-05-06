@@ -7,8 +7,13 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.aca.arabamsat.Repository.AuthRepository
+import com.aca.arabamsat.ViewModels.LoginViewModel
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -31,6 +36,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var callBackManager: CallbackManager
+    private lateinit var mainActIntent: Intent
+    private lateinit var loginViewModel: LoginViewModel
 
     private companion object{
         private const val RC_SIGN_IN = 100
@@ -42,9 +49,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        googleSignInBtn.setOnClickListener {
-            signIn()
-        }
+
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -53,19 +58,50 @@ class LoginActivity : AppCompatActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
+        mainActIntent = Intent(this,MainActivity::class.java)
+
         firebaseAuth = FirebaseAuth.getInstance()
         callBackManager = CallbackManager.Factory.create()
+
+
+
+        initLoginViewModel()
+
+        googleSignInBtn.setOnClickListener {
+            signInGoogle()
+        }
 
         fBbutton.setOnClickListener {
             signInFacebook()
         }
+
+        loginBtn.setOnClickListener {
+            signInEmailPass(emailEditTxt.text.toString(),passEditTxt.text.toString())
+        }
+
+        loginViewModel.getAuthenticatedUser().observe(this, Observer { user ->
+            Log.d(TAG, "onCreate: dobijeni user ${user.email}")
+        })
+    }
+
+    private fun initLoginViewModel() {
+        loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+    }
+
+    private fun signInEmailPass(email: String, pass: String) {
+        loginViewModel.signInWithEmailAndPassword(email, pass).observe(this, Observer { user ->
+
+            Log.d(TAG, "onCreate: dobijeni user ${user.email}")
+        })
+
     }
 
 
     private fun signInFacebook(){
         fBbutton.registerCallback(callBackManager,object:FacebookCallback<LoginResult>{
             override fun onSuccess(result: LoginResult?) {
-                handleFaceBookAccessToken(result!!.accessToken)
+                loginViewModel.signInFacebook(result!!.accessToken)
+               // handleFaceBookAccessToken(result!!.accessToken)
             }
 
             override fun onCancel() {
@@ -79,40 +115,14 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-    private fun handleFaceBookAccessToken(accessToken: AccessToken?) {
-            val credential = FacebookAuthProvider.getCredential(accessToken!!.token)
-            firebaseAuth.signInWithCredential(credential)
-                .addOnSuccessListener { authResult -> 
-                    val email : String? = authResult.user.email
-                    Log.d(TAG, "handleFaceBookAccessToken: ${authResult.user.displayName}")
-                }
-                .addOnFailureListener{ e ->
-                    Log.d(TAG, "handleFaceBookAccessToken: ${e.message}")
-                }
-    }
 
-    private fun signIn() {
+
+
+    private fun signInGoogle() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        firebaseAuth.signInWithCredential(credential)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success")
-                    val user = firebaseAuth.currentUser
-                    Log.d(TAG, "onStart: $user")
-                    ///updateUI(currentUser)
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
-                    //updateUI(null)
-                }
-            }
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -124,7 +134,8 @@ class LoginActivity : AppCompatActivity() {
                 // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)!!
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
-                firebaseAuthWithGoogle(account.idToken!!)
+                loginViewModel.signInGoogle(account.idToken!!)
+                //firebaseAuthWithGoogle(account.idToken!!)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e)
@@ -132,6 +143,8 @@ class LoginActivity : AppCompatActivity() {
         }
         callBackManager.onActivityResult(requestCode,resultCode, data)
     }
+
+
 
     override fun onStart() {
         super.onStart()

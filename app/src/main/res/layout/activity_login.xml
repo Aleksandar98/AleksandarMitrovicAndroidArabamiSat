@@ -6,21 +6,69 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
+    <LinearLayout
 
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/googleSignInBtn"
         android:layout_centerInParent="true"
+        android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
 
-    <com.facebook.login.widget.LoginButton
-        android:layout_centerInParent="true"
-        android:layout_below="@+id/googleSignInBtn"
-        android:id="@+id/fBbutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp" />
+        <EditText
+            android:id="@+id/emailEditTxt"
+            android:inputType="textEmailAddress"
+            android:hint="Email"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"/>
+
+        <EditText
+            android:id="@+id/passEditTxt"
+            android:inputType="textPassword"
+            android:hint="Password"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"/>
+
+ <LinearLayout
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:orientation="horizontal">
+     <com.google.android.material.button.MaterialButton
+         android:id="@+id/loginBtn"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="Login"
+         android:layout_margin="5dp"
+         android:layout_gravity="center"/>
+
+     <TextView
+         android:id="@+id/createAccTxt"
+         android:textSize="18sp"
+         android:layout_margin="5dp"
+         android:layout_gravity="center"
+         android:gravity="right"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:text="Create account"
+         />
+ </LinearLayout>
+
+        <com.google.android.gms.common.SignInButton
+            android:layout_gravity="center"
+            android:id="@+id/googleSignInBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <com.facebook.login.widget.LoginButton
+            android:layout_gravity="center"
+            android:id="@+id/fBbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp" />
+    </LinearLayout>
+
+
+
 
 </RelativeLayout>
