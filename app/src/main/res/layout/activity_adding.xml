@@ -15,6 +15,12 @@
         android:layout_height="wrap_content">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:hint="Model"
+            android:id="@+id/modelEdit"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"/>
+
+        <com.google.android.material.textfield.TextInputEditText
             android:hint="Year"
             android:id="@+id/yearEdit"
             android:layout_width="300dp"
@@ -27,6 +33,11 @@
         <com.google.android.material.textfield.TextInputEditText
             android:hint="Phone"
             android:id="@+id/phoneEdit"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"/>
+        <com.google.android.material.textfield.TextInputEditText
+            android:hint="Email"
+            android:id="@+id/emailEdit"
             android:layout_width="300dp"
             android:layout_height="wrap_content"/>
         <com.google.android.material.textfield.TextInputEditText

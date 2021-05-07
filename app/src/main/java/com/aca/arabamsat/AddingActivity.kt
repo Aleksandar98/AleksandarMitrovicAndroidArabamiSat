@@ -1,26 +1,31 @@
 package com.aca.arabamsat
 
+import android.content.ClipData
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import com.aca.arabamsat.Models.Ad
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.activity_adding.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
 
 class AddingActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var storage: FirebaseStorage
     private  val TAG = "myTag"
     private val PICK_IMAGE = 123;
-
+    private lateinit var selectedImagesData: ClipData
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_adding)
@@ -29,33 +34,60 @@ class AddingActivity : AppCompatActivity() {
         val db = Firebase.firestore
         storage = Firebase.storage
 
+        phoneEdit.setText(firebaseAuth.currentUser.phoneNumber)
+        emailEdit.setText(firebaseAuth.currentUser.email)
+
         val storageRef = storage.reference
-        storageRef.child("ads/mountains.jpg").downloadUrl.addOnSuccessListener {
-            // Got the download URL for 'users/me/profile.png'
-            Glide.with(this).load(it).into(tempImg)
-        }.addOnFailureListener {
-            // Handle any errors
-        }
+
 
 
         uploadAdBtn.setOnClickListener{
-            val user = hashMapOf(
-                "year" to "2020",
-                "price" to "111500",
+            val adObject = hashMapOf(
+                "model" to modelEdit.text.toString(),
+                "year" to yearEdit.text.toString(),
+                "price" to priceEdit.text.toString(),
                 "userId" to firebaseAuth.currentUser.uid,
-                "phoneNuber" to "1234567",
-                "description" to "Random desc",
-                "userName" to firebaseAuth.currentUser.email
+                "phoneNuber" to phoneEdit.text.toString(),
+                "description" to descEdit.text.toString(),
+                "email" to firebaseAuth.currentUser.email
             )
 
+
             db.collection("Ads")
-                .add(user)
+                .add(adObject)
                 .addOnSuccessListener { documentReference ->
                     Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-                    db.collection("Ads").document(documentReference.id)
-                        .update("pictures", listOf("a","b","c"))
+
+                    val imageCount = selectedImagesData.itemCount
+                    var i = 0
+                    var uploadImgUrls: MutableList<String> = mutableListOf()
+                    GlobalScope.launch(Dispatchers.IO) {
+                        while (i<imageCount) {
+                            val uri: Uri? = selectedImagesData.getItemAt(i).uri
+
+
+                            val carImagesRef = storageRef.child("ads/${documentReference.id}/i_$i.jpg")
+
+                            val uploadTask = uri?.let { it1 -> carImagesRef.putFile(it1).await() }
+                            val url:Uri = carImagesRef.downloadUrl.await()
+                            uploadImgUrls.add(url.toString())
+
+                            i++
+                        }
+                        Log.d(TAG, "onCreate: urlList Size ${uploadImgUrls.size}")
+                        for(url in uploadImgUrls){Log.d(TAG, "onCreate: url ${url}")}
+
+                        db.collection("Ads").document(documentReference.id)
+                            .update("pictures", uploadImgUrls)
+                            .addOnSuccessListener {
+                                Toast.makeText(this@AddingActivity,"Ad Published!",Toast.LENGTH_LONG).show()
+                            }
+                    }
+
+
                 }
                 .addOnFailureListener { e ->
+                    Toast.makeText(this@AddingActivity,"Error publishing your Ad",Toast.LENGTH_LONG).show()
                     Log.w(TAG, "Error adding document", e)
                 }
         }
@@ -68,58 +100,17 @@ class AddingActivity : AppCompatActivity() {
             startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE)
         }
 
-        db.collection("Ads")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    var ad: Ad = document.toObject(Ad::class.java)
-
-                    Log.d(TAG, "${ad}")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents.", exception)
-            }
     }
+
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == PICK_IMAGE){
+
             data?.clipData?.let {
-                val imageCount = it.itemCount
-                var i = 0
-                while (i<imageCount) {
-                    val uri: Uri? = it.getItemAt(i).uri
-
-                    // Create a storage reference from our app
-                    val storageRef = storage.reference
-
-                    // Create a reference to "mountains.jpg"
-                    val mountainsRef = storageRef.child("mountains.jpg")
-
-                    // Create a reference to 'images/mountains.jpg'
-                    val mountainImagesRef = storageRef.child("ads/adId/mountains$i.jpg")
-
-                    val uploadTask = uri?.let { it1 -> mountainImagesRef.putFile(it1) }
-                    if (uploadTask != null) {
-                        uploadTask.addOnFailureListener {
-                            // Handle unsuccessful uploads
-                            Log.d(TAG, "onActivityResult: ${it.message}")
-                        }.addOnSuccessListener { taskSnapshot ->
-                            // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-                            // ...
-                            Log.d(TAG, "onActivityResult: ${taskSnapshot.uploadSessionUri}")
-                        }
-                    }
-
-                    i++
-
-                }
+                selectedImagesData = it
 
             }
-//            val inputStream: InputStream? =
-//                data?.data?.let { applicationContext.getContentResolver().openInputStream(it) }
-
-
         }
     }
 
