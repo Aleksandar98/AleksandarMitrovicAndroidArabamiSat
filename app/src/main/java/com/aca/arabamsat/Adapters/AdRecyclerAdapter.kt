@@ -43,10 +43,14 @@ class AdRecyclerAdapter() :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
+
         holder.priceText.text = "${dataSet.get(position).price} E"
-        holder.modelText.text = dataSet.get(position).description
+        holder.modelText.text = dataSet.get(position).model
         holder.yearText.text = dataSet.get(position).year
-        Glide.with(holder.carImg).load(dataSet.get(position).pictures.get(0)).into(holder.carImg)
+        if(dataSet.get(position).pictures.isNotEmpty()) {
+            Glide.with(holder.carImg).load(dataSet.get(position).pictures.get(0))
+                .into(holder.carImg)
+        }
     }
 
     fun submitList(adList: List<Ad>){

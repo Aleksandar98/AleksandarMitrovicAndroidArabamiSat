@@ -3,12 +3,21 @@ package com.aca.arabamsat
 import android.R.attr
 import android.content.Intent
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aca.arabamsat.Adapters.AdRecyclerAdapter
 import com.aca.arabamsat.Models.Ad
+import com.aca.arabamsat.ViewModels.MainViewModel
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -31,56 +40,44 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var storage: FirebaseStorage
+    private lateinit var mainActivityViewModel: MainViewModel
+    private lateinit var adAdapter: AdRecyclerAdapter
     private  val TAG = "myTag"
-    private val PICK_IMAGE = 123;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setSupportActionBar(findViewById(R.id.toolbar))
 
-        firebaseAuth = FirebaseAuth.getInstance()
-        val db = Firebase.firestore
 
-        val adAdapter = AdRecyclerAdapter()
+        mainActivityViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        carsRecyclerView.layoutManager = LinearLayoutManager(this)
-        carsRecyclerView.adapter = adAdapter
 
-        GlobalScope.launch(Dispatchers.IO) {
+        initRecyclerView()
 
-            var list:List<Ad>  = db.collection("Ads").get().await().toObjects(Ad::class.java)
-            withContext(Main){
-                adAdapter.submitList(list)
-                adAdapter.notifyDataSetChanged()
+        mainActivityViewModel.getAds().observe(this, Observer {
+            adAdapter.submitList(it)
+            adAdapter.notifyDataSetChanged()
+        })
+
+        mainActivityViewModel.isLoading().observe(this, Observer {
+            //TODO Fix
+            if(!it)
+                progressBar.visibility = GONE
+        })
+
+        mainActivityViewModel.isLogedIn().observe(this, Observer {
+            if(!it){
+                val loginActIntent = Intent(this,LoginActivity::class.java)
+                startActivity(loginActIntent)
+                finish()
             }
+        })
 
-            var string = ""
-            for (ad in list) {
-                string+="${ad}\n"
-                Log.d(TAG, "${ad}")
-            }
+        if(mainActivityViewModel.isDatabaseEmpty()){
+            //TODO Fix dinamic change
+            databaseEmptyTxt.visibility = VISIBLE
         }
-
-        val demoAds = listOf<Ad>(
-            Ad("1999","1000","Y5355345D53425F","1233456","Prius 1","Aca123",
-                listOf("https://www.designnews.com/sites/designnews.com/files/Prius-1-02%20%281%29.jpg")),
-            Ad("2006","5000","Y5355345D53425F","1233456","Prius 2","Aca123",
-            listOf("https://upload.wikimedia.org/wikipedia/commons/2/2b/2nd_Toyota_Prius.jpg")),
-            Ad("2010","8000","Y5355345D53425F","1233456","Prius 3","Aca123",
-                listOf("https://www.mad4wheels.com/img/free-car-images/mobile/8879/toyota-prius-zvw30--2011-315423.jpg")),
-            Ad("2020","15000","Y5355345D53425F","1233456","Prius 4","Aca123",
-                listOf("https://upload.wikimedia.org/wikipedia/commons/4/4a/Prius_4_IMG_6899.JPG"))
-
-            )
-
-
-
-//        flowersListViewModel.flowersLiveData.observe(this, {
-//            it?.let {
-//                flowersAdapter.submitList(it as MutableList<Flower>)
-//                headerAdapter.updateFlowerCount(it.size)
-//            }
-//        })
 
 
         fab.setOnClickListener {
@@ -91,4 +88,34 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.menu_items, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+//        R.id.action_settings -> {
+//            // User chose the "Settings" item, show the app settings UI...
+//            true
+//        }
+
+        R.id.action_logout -> {
+            mainActivityViewModel.logoutUser()
+            true
+        }
+
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
+    }
+
+    fun initRecyclerView(){
+        adAdapter = AdRecyclerAdapter()
+
+        carsRecyclerView.layoutManager = LinearLayoutManager(this)
+        carsRecyclerView.adapter = adAdapter
+    }
 }

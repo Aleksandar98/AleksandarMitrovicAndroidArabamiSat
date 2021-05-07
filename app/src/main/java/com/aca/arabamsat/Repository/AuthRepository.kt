@@ -14,9 +14,23 @@ import com.google.firebase.auth.GoogleAuthProvider
 object AuthRepository{
 
     private const val TAG = "myTag"
+    lateinit var isLogedInLiveData:MutableLiveData<Boolean>
+
     val firebaseAuth :FirebaseAuth by lazy {
         FirebaseAuth.getInstance()
     }
+    
+    init {
+        Log.d(TAG, "izvrsavam se: ")
+        if(firebaseAuth.currentUser!= null){
+            isLogedInLiveData = MutableLiveData<Boolean>(true )
+        }else{
+            isLogedInLiveData = MutableLiveData<Boolean>(false )
+        }
+
+    }
+
+
 
     fun signInUserEmail(email:String,pass:String):MutableLiveData<User>{
         lateinit var logedInUser:User
@@ -29,6 +43,7 @@ object AuthRepository{
                     val user = firebaseAuth.currentUser
                     logedInUser = User(user.email,user.displayName)
                     signInUser.value = logedInUser
+                    isLogedInLiveData.postValue(true)
                     Log.d(TAG, "signInWithEmail:success value ${ signInUser.value}")
                     //startActivity(mainActIntent)
                 } else {
@@ -52,6 +67,7 @@ object AuthRepository{
                 val email : String? = authResult.user.email
                 val displayName : String? = authResult.user.displayName
                 logedInUser = User(email,displayName)
+                isLogedInLiveData.postValue(true)
                 signInUser.value = logedInUser
                 Log.d(TAG, "handleFaceBookAccessToken: ${authResult.user.displayName}")
 
@@ -73,6 +89,7 @@ object AuthRepository{
                     Log.d(TAG, "signInWithCredential:success")
                     val user = firebaseAuth.currentUser
                     logedInUser = User(user.email,user.displayName)
+                    isLogedInLiveData.postValue(true)
                     signInUser.value = logedInUser
                     Log.d(TAG, "onStart: $user")
                     //startActivity(mainActIntent)
@@ -84,5 +101,17 @@ object AuthRepository{
                 }
             }
         return signInUser
+    }
+
+    fun logoutUser() {
+        firebaseAuth.signOut()
+        isLogedInLiveData.postValue(false)
+
+    }
+
+    fun isLogedIn(): MutableLiveData<Boolean> {
+       // if(firebaseAuth.currentUser!= null)
+           // isLogedInLiveData.postValue(true)
+        return isLogedInLiveData
     }
 }

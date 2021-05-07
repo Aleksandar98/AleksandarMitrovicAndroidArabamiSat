@@ -24,11 +24,12 @@ class LoginViewModel : ViewModel() {
 
     fun signInFacebook(accessToken: AccessToken?) {
         AuthRepository.signInUserFacebook(accessToken)
-        TODO("Not yet implemented")
     }
 
     fun signInGoogle(idToken: String) {
         AuthRepository.signInUserGoogle(idToken)
-        TODO("Not yet implemented")
+    }
+    fun isLogedIn():LiveData<Boolean>{
+        return AuthRepository.isLogedIn();
     }
 }

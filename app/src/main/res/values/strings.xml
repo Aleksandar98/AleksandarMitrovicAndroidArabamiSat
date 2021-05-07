@@ -2,5 +2,8 @@
     <string name="app_name">Arabamı Sat</string>
     <string name="facebook_app_id">220882346071496</string>
     <string name="fb_login_protocol_scheme">fb220882346071496</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_logout">Logout</string>
+    <string name="databse_empty">No Ads Avaliable</string>
 
 </resources>

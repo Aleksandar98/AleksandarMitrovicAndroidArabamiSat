@@ -30,7 +30,8 @@
                     app:cardBackgroundColor="#FFA500"
                     android:layout_gravity="right"
                     android:id="@+id/priceCard"
-                    android:layout_width="100dp"
+                    android:layout_width="wrap_content"
+                    android:minWidth="100dp"
                     android:layout_height="30dp">
 
                     <com.google.android.material.textview.MaterialTextView

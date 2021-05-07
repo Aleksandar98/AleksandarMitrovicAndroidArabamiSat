@@ -79,8 +79,12 @@ class LoginActivity : AppCompatActivity() {
             signInEmailPass(emailEditTxt.text.toString(),passEditTxt.text.toString())
         }
 
-        loginViewModel.getAuthenticatedUser().observe(this, Observer { user ->
-            Log.d(TAG, "onCreate: dobijeni user ${user.email}")
+        loginViewModel.isLogedIn().observe(this, Observer {
+            if(it){
+                val mainActIntent = Intent(this,MainActivity::class.java)
+                startActivity(mainActIntent)
+                finish()
+            }
         })
     }
 
@@ -89,10 +93,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun signInEmailPass(email: String, pass: String) {
-        loginViewModel.signInWithEmailAndPassword(email, pass).observe(this, Observer { user ->
-
-            Log.d(TAG, "onCreate: dobijeni user ${user.email}")
-        })
+        loginViewModel.signInWithEmailAndPassword(email, pass)
 
     }
 
