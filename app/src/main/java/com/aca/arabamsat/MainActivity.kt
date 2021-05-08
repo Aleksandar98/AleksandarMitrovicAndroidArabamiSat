@@ -85,6 +85,13 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        adAdapter.onItemClick = { ad ->
+            Log.d(TAG, "onCreate: item: ${ad.model}")
+            val intent = Intent(this,DetailActivity::class.java)
+            intent.putExtra("selectedAd",ad)
+            startActivity(intent)
+        }
+
 
     }
 

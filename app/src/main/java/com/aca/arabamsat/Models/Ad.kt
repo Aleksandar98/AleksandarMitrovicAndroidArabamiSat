@@ -1,6 +1,8 @@
 package com.aca.arabamsat.Models
 
-data class Ad(
+import java.io.Serializable
+
+data class Ad (
     val year:String,
     val model:String,
     val price:String,
@@ -9,6 +11,6 @@ data class Ad(
     val description:String,
     val userName:String,
     val pictures:List<String>
-){
+): Serializable{
     constructor():this("","","","","","","", emptyList())
 }

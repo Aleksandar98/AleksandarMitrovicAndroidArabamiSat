@@ -16,7 +16,8 @@ class AdRecyclerAdapter() :
     RecyclerView.Adapter<AdRecyclerAdapter.ViewHolder>() {
 
     private var dataSet: List<Ad> = ArrayList()
-    class ViewHolder constructor(view: View): RecyclerView.ViewHolder(view){
+    var onItemClick: ((Ad) -> Unit)? = null
+    inner class ViewHolder constructor(view: View): RecyclerView.ViewHolder(view){
 
         val priceText: TextView
         val modelText: TextView
@@ -28,6 +29,10 @@ class AdRecyclerAdapter() :
             modelText = view.findViewById(R.id.modelTxtView)
             yearText = view.findViewById(R.id.yearTxtView)
             carImg = view.findViewById(R.id.carImgView)
+
+            itemView.setOnClickListener {
+                onItemClick?.invoke(dataSet[adapterPosition])
+            }
         }
     }
 

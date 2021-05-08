@@ -27,7 +27,7 @@
                 android:orientation="vertical">
 
                 <com.google.android.material.card.MaterialCardView
-                    app:cardBackgroundColor="#FFA500"
+                    app:cardBackgroundColor="@color/darkOrange"
                     android:layout_gravity="right"
                     android:id="@+id/priceCard"
                     android:layout_width="wrap_content"

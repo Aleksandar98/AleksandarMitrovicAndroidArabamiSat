@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_callAd"
+        android:icon="@drawable/ic_baseline_local_phone_24"
+        android:title="@string/action_callAd"/>
+    <item
+        android:id="@+id/action_emailAd"
+        android:icon="@drawable/ic_baseline_email_24"
+        android:title="@string/action_emailAd"/>
+    <item
+        android:id="@+id/action_favoriteAd"
+        android:icon="@drawable/ic_baseline_favorite_border_24"
+        android:title="@string/action_favoriteAd"/>
+</menu>
