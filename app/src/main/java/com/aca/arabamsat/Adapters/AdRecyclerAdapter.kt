@@ -49,7 +49,7 @@ class AdRecyclerAdapter() :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
 
-        holder.priceText.text = "${dataSet.get(position).price} E"
+        holder.priceText.text = "${dataSet.get(position).price} €"
         holder.modelText.text = dataSet.get(position).model
         holder.yearText.text = dataSet.get(position).year
         if(dataSet.get(position).pictures.isNotEmpty()) {

@@ -6,17 +6,23 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.aca.arabamsat.Models.Ad
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-object AdRepository {
+class AdRepository @Inject constructor(
+    val db: FirebaseFirestore,
+    val storageRef: StorageReference
+){
 
-    val storage = Firebase.storage
-    val db = Firebase.firestore
-    val storageRef = storage.reference
+//    val storage = Firebase.storage
+//    val db = Firebase.firestore
+//    val storageRef = storage.reference
     private val TAG = "myTag"
 
     fun getAllAds():MutableLiveData<List<Ad>>{
@@ -40,12 +46,6 @@ object AdRepository {
                 }
             }
 
-
-//            var string = ""
-//            for (ad in list) {
-//                string+="${ad}\n"
-//                Log.d("myTag", "${ad}")
-//            }
         }
         return adListLiveData;
     }

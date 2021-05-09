@@ -11,6 +11,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -24,6 +25,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
@@ -34,13 +36,13 @@ import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.lang.StringBuilder
 
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var storage: FirebaseStorage
-    private lateinit var mainActivityViewModel: MainViewModel
+    private val mainActivityViewModel: MainViewModel by viewModels()
     private lateinit var adAdapter: AdRecyclerAdapter
     private  val TAG = "myTag"
 
@@ -50,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar))
 
 
-        mainActivityViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+      //  mainActivityViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
 
         initRecyclerView()

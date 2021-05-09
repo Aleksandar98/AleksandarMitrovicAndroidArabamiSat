@@ -10,18 +10,17 @@ import com.facebook.AccessToken
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import javax.inject.Inject
 
-object AuthRepository{
+class AuthRepository @Inject constructor(
+     val firebaseAuth:FirebaseAuth
+){
 
-    private const val TAG = "myTag"
-    lateinit var isLogedInLiveData:MutableLiveData<Boolean>
+    private  val TAG = "myTag"
+    var isLogedInLiveData:MutableLiveData<Boolean>
 
-    val firebaseAuth :FirebaseAuth by lazy {
-        FirebaseAuth.getInstance()
-    }
-    
     init {
-        Log.d(TAG, "izvrsavam se: ")
+
         if(firebaseAuth.currentUser!= null){
             isLogedInLiveData = MutableLiveData<Boolean>(true )
         }else{

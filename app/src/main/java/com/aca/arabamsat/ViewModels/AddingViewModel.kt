@@ -7,8 +7,13 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.aca.arabamsat.Repository.AdRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class AddingViewModel : ViewModel(){
+@HiltViewModel
+class AddingViewModel @Inject constructor(
+    val adRepository: AdRepository
+) : ViewModel(){
 
     private val TAG = "myTag"
 
@@ -35,7 +40,7 @@ class AddingViewModel : ViewModel(){
         }
 
         Log.d(TAG, "uploadAd: ${uriList.size}")
-       return AdRepository.uploadAd(adObject,uriList)
+       return adRepository.uploadAd(adObject,uriList)
     }
 
 }

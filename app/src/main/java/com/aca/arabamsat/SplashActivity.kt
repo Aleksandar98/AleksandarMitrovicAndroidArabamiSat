@@ -4,24 +4,27 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.aca.arabamsat.ViewModels.LoginViewModel
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
 
 
-    private lateinit var loginViewModel: LoginViewModel
-    private lateinit var firebaseAuth: FirebaseAuth
+    private val loginViewModel: LoginViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        initLoginViewModel()
+        //initLoginViewModel()
 
-        firebaseAuth = FirebaseAuth.getInstance()
+
 
         loginViewModel.isLogedIn().observe(this, Observer {
             if(it){
@@ -55,6 +58,6 @@ class SplashActivity : AppCompatActivity() {
 //    }
 
     private fun initLoginViewModel() {
-        loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+        //loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
     }
 }

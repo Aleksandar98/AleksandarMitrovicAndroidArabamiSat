@@ -55,7 +55,7 @@ class DetailActivity : AppCompatActivity() {
 
        // Glide.with(this).load(ad.pictures.get(0)).into(mainImg)
 
-        carDetailPriceTxt.text = "${ad.price} E"
+        carDetailPriceTxt.text = "${ad.price} €"
         carDetailTitleTxt.text = ad.model
 
         valueTextView.text = ad.model

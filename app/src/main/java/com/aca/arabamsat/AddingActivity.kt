@@ -10,6 +10,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.aca.arabamsat.ViewModels.AddingViewModel
@@ -18,11 +19,12 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_adding.*
-
+@AndroidEntryPoint
 class AddingActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var addingViewModel: AddingViewModel
+    private val addingViewModel: AddingViewModel by viewModels()
     private  val TAG = "myTag"
     private val PICK_IMAGE = 123;
     private var selectedData: Intent? = null
@@ -37,8 +39,6 @@ class AddingActivity : AppCompatActivity() {
         phoneEdit.setText(firebaseAuth.currentUser.phoneNumber)
         emailEdit.setText(firebaseAuth.currentUser.email)
 
-
-        addingViewModel = ViewModelProvider(this).get(AddingViewModel::class.java)
 
 
         uploadAdBtn.setOnClickListener{

@@ -7,8 +7,13 @@ import androidx.lifecycle.ViewModel
 import com.aca.arabamsat.Models.User
 import com.aca.arabamsat.Repository.AuthRepository
 import com.facebook.AccessToken
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class LoginViewModel : ViewModel() {
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    val authRepository: AuthRepository
+) : ViewModel() {
     private  val TAG = "myTag"
 
     private var authenticatedUserLiveData = MutableLiveData<User>()
@@ -18,18 +23,18 @@ class LoginViewModel : ViewModel() {
     }
 
     fun signInWithEmailAndPassword(email: String, pass: String): MutableLiveData<User> {
-        return AuthRepository.signInUserEmail(email,pass)
+        return authRepository.signInUserEmail(email,pass)
        // Log.d(TAG, "signInWithEmailAndPasswordVM: ${authenticatedUserLiveData.value}")
     }
 
     fun signInFacebook(accessToken: AccessToken?) {
-        AuthRepository.signInUserFacebook(accessToken)
+        authRepository.signInUserFacebook(accessToken)
     }
 
     fun signInGoogle(idToken: String) {
-        AuthRepository.signInUserGoogle(idToken)
+        authRepository.signInUserGoogle(idToken)
     }
     fun isLogedIn():LiveData<Boolean>{
-        return AuthRepository.isLogedIn();
+        return authRepository.isLogedIn();
     }
 }
