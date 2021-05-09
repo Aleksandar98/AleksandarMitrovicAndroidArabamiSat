@@ -18,6 +18,7 @@ class AuthRepository @Inject constructor(
 
     private  val TAG = "myTag"
     var isLogedInLiveData:MutableLiveData<Boolean>
+    var isUserCreatedLiveData:MutableLiveData<Boolean> = MutableLiveData()
 
     init {
 
@@ -112,5 +113,33 @@ class AuthRepository @Inject constructor(
        // if(firebaseAuth.currentUser!= null)
            // isLogedInLiveData.postValue(true)
         return isLogedInLiveData
+    }
+
+    fun sendPasswordResetMail() {
+        firebaseAuth.sendPasswordResetEmail(firebaseAuth.currentUser.email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "Email sent.")
+                }
+            }
+    }
+
+    fun crateUser(email: String, password: String): MutableLiveData<Boolean> {
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener() { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "createUserWithEmail:success")
+                    val user = firebaseAuth.currentUser
+                    isUserCreatedLiveData.postValue(true)
+
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                    isUserCreatedLiveData.postValue(false)
+
+                }
+            }
+        return isUserCreatedLiveData
     }
 }

@@ -37,4 +37,12 @@ class LoginViewModel @Inject constructor(
     fun isLogedIn():LiveData<Boolean>{
         return authRepository.isLogedIn();
     }
+
+    fun sendPasswordResetMail() {
+        authRepository.sendPasswordResetMail()
+    }
+
+    fun createUser(email: String, password: String):LiveData<Boolean> {
+        return authRepository.crateUser(email,password)
+    }
 }

@@ -1,19 +1,26 @@
 package com.aca.arabamsat
 
+import android.Manifest
 import android.content.ClipData
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.net.Uri
 import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.aca.arabamsat.ViewModels.AddingViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -29,7 +36,7 @@ class AddingActivity : AppCompatActivity() {
     private val PICK_IMAGE = 123;
     private var selectedData: Intent? = null
     private var didUploadImages: Boolean = false
-
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_adding)
@@ -39,7 +46,35 @@ class AddingActivity : AppCompatActivity() {
         phoneEdit.setText(firebaseAuth.currentUser.phoneNumber)
         emailEdit.setText(firebaseAuth.currentUser.email)
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.d(TAG, "onCreate: treba mi jos premisihe")
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            ActivityCompat.requestPermissions(this,
+                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                99);
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location : Location? ->
+                if (location != null) {
+                    Log.d(TAG, "onCreate: ${location.latitude}")
+                }
+            }
 
         uploadAdBtn.setOnClickListener{
 
@@ -84,6 +119,14 @@ class AddingActivity : AppCompatActivity() {
         uploadImagesBtn.setOnClickListener {
             launcImagePicker()
         }
+
+        uploadLocation.setOnClickListener {
+            getUserLocation()
+        }
+
+    }
+
+    private fun getUserLocation() {
 
     }
 

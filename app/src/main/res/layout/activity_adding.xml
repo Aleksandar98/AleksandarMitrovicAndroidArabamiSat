@@ -5,6 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AddingActivity">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"/>
 
     <ProgressBar
         android:visibility="invisible"
@@ -56,8 +64,15 @@
             android:id="@+id/descEdit"
             android:layout_width="300dp"
             android:layout_height="wrap_content"/>
+        <com.google.android.material.button.MaterialButton
+            app:icon="@drawable/ic_baseline_location_on_24"
+            android:id="@+id/uploadLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set location"/>
     </LinearLayout>
     <com.google.android.material.button.MaterialButton
+        app:icon="@drawable/ic_baseline_cloud_upload_24"
         android:layout_below="@+id/inputHolder"
         android:id="@+id/uploadImagesBtn"
         android:layout_width="200dp"
@@ -66,6 +81,8 @@
         android:layout_centerHorizontal="true"/>
 
     <com.google.android.material.button.MaterialButton
+        android:textColor="@color/black"
+        android:backgroundTint="@color/colorAccent"
         android:layout_below="@+id/uploadImagesBtn"
         android:id="@+id/uploadAdBtn"
         android:layout_width="200dp"

@@ -104,10 +104,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-//        R.id.action_settings -> {
-//            // User chose the "Settings" item, show the app settings UI...
-//            true
-//        }
+        R.id.action_settings -> {
+            // User chose the "Settings" item, show the app settings UI...
+            true
+        }
 
         R.id.action_logout -> {
             mainActivityViewModel.logoutUser()

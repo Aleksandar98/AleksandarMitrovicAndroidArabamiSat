@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
-    <color name="darkOrange">#FFA500</color>
+    <color name="colorPrimary">#a6e3e9</color>
+    <color name="colorPrimaryDark">#71c9ce</color>
+    <color name="colorAccent">#FFA500</color>
+    <color name="darkOrange">#71c9ce</color>
+<!--    <color name="darkOrange">#FFA500</color>-->
+
+    <color name="blue1">#e3fdfd</color>
+    <color name="blue2">#cbf1f5</color>
+    <color name="blue3">#a6e3e9</color>
+    <color name="blue4">#71c9ce</color>
+
     <color name="black">#000000</color>
 </resources>

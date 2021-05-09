@@ -1,37 +1,30 @@
 package com.aca.arabamsat
 
 import android.content.Intent
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.util.Base64
+import android.text.InputType
 import android.util.Log
-import android.widget.Toast
+import android.util.Xml
+import android.widget.EditText
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.aca.arabamsat.Repository.AuthRepository
 import com.aca.arabamsat.ViewModels.LoginViewModel
-import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.FacebookAuthProvider
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_login.*
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
+import org.xmlpull.v1.XmlPullParser
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
@@ -67,6 +60,16 @@ class LoginActivity : AppCompatActivity() {
             signInFacebook()
         }
 
+        forgotPassTxt.setOnClickListener{
+            showConfirmResetDialog()
+        }
+
+        createAccTxt.setOnClickListener{
+            val mainActIntent = Intent(this,SignUpActivity::class.java)
+            startActivity(mainActIntent)
+            finish()
+        }
+
         loginBtn.setOnClickListener {
             signInEmailPass(emailEditTxt.text.toString(),passEditTxt.text.toString())
         }
@@ -78,6 +81,25 @@ class LoginActivity : AppCompatActivity() {
                 finish()
             }
         })
+    }
+
+    private fun showConfirmResetDialog() {
+
+        val editText = EditText(this)
+        editText.setInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Reset password")
+            .setMessage("Enter email address assosiated with your account")
+            .setView(editText)
+            .setPositiveButton("Send"){dialog,which->
+                loginViewModel.sendPasswordResetMail()
+            }
+            .setNegativeButton("Cancel"){dialog,which->
+                dialog.cancel()
+            }
+            .show()
     }
 
     private fun signInEmailPass(email: String, pass: String) {
