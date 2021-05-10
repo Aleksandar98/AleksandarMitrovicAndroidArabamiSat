@@ -40,6 +40,7 @@ class ImgsRecyclerAdapter() :
             Glide.with(holder.carImg).load(dataSet.get(position))
                 .into(holder.carImg)
 
+
     }
 
     fun submitList(adList: List<String>){

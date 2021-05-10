@@ -1,7 +1,5 @@
 package com.aca.arabamsat.ViewModels
 
-import android.content.ClipData
-import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -20,28 +18,28 @@ class AddingViewModel @Inject constructor(
 
     fun uploadAd(
         adObject: Ad,
-        data: Intent?
+        selectedFilePaths: MutableList<String>
     ):LiveData<Boolean> {
-
-        val uriList:MutableList<Uri> = mutableListOf()
-
-        data?.clipData?.let {
-            var i = 0;
-            val clipDataSize = it.itemCount
-
-            while (i<clipDataSize){
-                uriList.add(it.getItemAt(i).uri)
-                i++
-            }
-
-        }
-
-        data?.data?.let{
-            uriList.add(it)
-        }
-
-        Log.d(TAG, "uploadAd: ${uriList.size}")
-       return adRepository.uploadAd(adObject,uriList)
+//
+//        val uriList:MutableList<Uri> = mutableListOf()
+//
+//        data?.clipData?.let {
+//            var i = 0;
+//            val clipDataSize = it.itemCount
+//
+//            while (i<clipDataSize){
+//                uriList.add(it.getItemAt(i).uri)
+//                i++
+//            }
+//
+//        }
+//
+//        data?.data?.let{
+//            uriList.add(it)
+//        }
+//
+//        Log.d(TAG, "uploadAd: ${uriList.size}")
+       return adRepository.uploadAd(adObject,selectedFilePaths)
     }
 
 }

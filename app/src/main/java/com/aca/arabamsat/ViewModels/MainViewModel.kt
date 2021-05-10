@@ -52,6 +52,9 @@ class MainViewModel @Inject constructor(
         return liveData
        // userRepository.getAllFavoriteAds()
     }
+    fun uploadCachedImages(){
+        userRepository.uploadCachedImages()
+    }
 
 
 }

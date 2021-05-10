@@ -1,34 +1,29 @@
 package com.aca.arabamsat
 
 import android.Manifest
-import android.content.ClipData
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.net.Uri
-import android.opengl.Visibility
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.aca.arabamsat.Models.Ad
 import com.aca.arabamsat.ViewModels.AddingViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_adding.*
+
+
 @AndroidEntryPoint
 class AddingActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
@@ -36,8 +31,10 @@ class AddingActivity : AppCompatActivity() {
     private  val TAG = "myTag"
     private val PICK_IMAGE = 123;
     private var selectedData: Intent? = null
+    private var selectedFilePaths: MutableList<String> = mutableListOf()
     private var didUploadImages: Boolean = false
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_adding)
@@ -70,6 +67,25 @@ class AddingActivity : AppCompatActivity() {
             // for ActivityCompat#requestPermissions for more details.
             return
         }
+
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (shouldShowRequestPermissionRationale(
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                // Explain to the user why we need to read the contacts
+            }
+
+            requestPermissions( arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                1441);
+
+            // MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE is an
+            // app-defined int constant that should be quite unique
+
+            return;
+        }
+
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location : Location? ->
                 if (location != null) {
@@ -89,19 +105,10 @@ class AddingActivity : AppCompatActivity() {
                 Toast.makeText(this,"Please fill in all fields",Toast.LENGTH_LONG).show()
             }else if(didUploadImages){
 
-//                val adObject = hashMapOf(
-//                    "model" to modelEdit.text.toString(),
-//                    "year" to yearEdit.text.toString(),
-//                    "price" to priceEdit.text.toString(),
-//                    "userId" to firebaseAuth.currentUser.uid,
-//                    "phoneNumber" to phoneEdit.text.toString(),
-//                    "description" to descEdit.text.toString(),
-//                    "email" to firebaseAuth.currentUser.email
-//                )
                 var adObject = Ad("",yearEdit.text.toString(),modelEdit.text.toString(),priceEdit.text.toString(),firebaseAuth.currentUser.uid,phoneEdit.text.toString(),descEdit.text.toString(),firebaseAuth.currentUser.email,
                     emptyList<String>())
 
-                addingViewModel.uploadAd(adObject,selectedData).observe(this, Observer {
+                addingViewModel.uploadAd(adObject,selectedFilePaths).observe(this, Observer {
                     if(it){
                         uploadingProgress.visibility = VISIBLE
                         //
@@ -142,13 +149,33 @@ class AddingActivity : AppCompatActivity() {
     }
 
 
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == PICK_IMAGE){
-            data?.let {
-                selectedData = it
+            data?.data?.let {
+               // selectedData = it
+                selectedFilePaths.add(ImageFilePath.getPath(this,it))
+
+
                 didUploadImages = true
             }
+
+
+
+            data?.clipData?.let {
+                Log.d(TAG, "onActivityResult: ulazim ovde za vise slika")
+                var i = 0;
+                val clipDataSize = it.itemCount
+
+                while (i<clipDataSize){
+                    selectedFilePaths.add(ImageFilePath.getPath(this,it.getItemAt(i).uri))
+                    i++
+                }
+                didUploadImages = true
+
+            }
+
         }
     }
 

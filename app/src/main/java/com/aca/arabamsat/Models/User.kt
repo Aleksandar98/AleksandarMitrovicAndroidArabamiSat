@@ -4,4 +4,5 @@ data class User(
     var userId:String,
     val email:String?,
     val name:String?,
-    var favoriteAds:MutableList<String>)
+    var favoriteAds:MutableList<String>,
+    var uploadIntents:MutableList<String>)

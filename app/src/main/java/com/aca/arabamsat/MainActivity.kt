@@ -52,10 +52,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-
-      //  mainActivityViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-
-
         initRecyclerView()
 
         mainActivityViewModel.getAds().observe(this, Observer {
@@ -95,7 +91,13 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        checkIfImagesForUpload()
 
+
+    }
+
+    private fun checkIfImagesForUpload() {
+        mainActivityViewModel.uploadCachedImages()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

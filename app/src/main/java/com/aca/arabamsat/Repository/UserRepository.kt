@@ -1,19 +1,24 @@
 package com.aca.arabamsat.Repository
 
+import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.aca.arabamsat.Models.Ad
-import com.aca.arabamsat.Models.User
+import com.aca.arabamsat.Models.UploadIntent
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.StorageReference
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.io.File
 import javax.inject.Inject
 
 
 class UserRepository @Inject constructor(
     val db: FirebaseFirestore,
-    val authRepository: AuthRepository
+    val authRepository: AuthRepository,
+    val storageRef: StorageReference
 ){
 
     val TAG:String = "myTag"
@@ -95,6 +100,50 @@ class UserRepository @Inject constructor(
                 }
         }
 
+    }
+
+    fun uploadCachedImages() {
+        val currentUserId = authRepository.firebaseAuth.currentUser?.uid
+
+        db.collection("UploadIntents").whereEqualTo("userId",currentUserId).addSnapshotListener{snapshot,e ->
+            val listIntents = snapshot?.toObjects(UploadIntent::class.java)
+            if (listIntents != null) {
+                for((index,intent) in listIntents.withIndex()){
+                    uploadImage(intent)
+                }
+
+            }
+        }
+    }
+
+    private fun uploadImage(intent: UploadIntent) {
+        val listUploadedUris:MutableList<String> = mutableListOf()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            for ((index,filePath) in intent.filePaths?.withIndex()!!) {
+
+                val carImagesRef = storageRef.child("ads/${intent.adId}/i_$index.jpg")
+
+                var file = Uri.fromFile(File(filePath))
+
+                val uploadTask = filePath?.let { it1 -> carImagesRef.putFile(file).await() }
+                val url: Uri = carImagesRef.downloadUrl.await()
+                Log.d(TAG, "uploadImage: DOBIJENI URL ${url}")
+                listUploadedUris.add(url.toString())
+
+            }
+
+            db.collection("Ads").document(intent.adId)
+                .update("pictures", listUploadedUris)
+                .addOnSuccessListener {
+                    deleteUploadIntent(intent)
+                    Log.d(TAG, "uploadAd: DONE UPLOADING")
+                }
+        }
+    }
+
+    private fun deleteUploadIntent(intent: UploadIntent) {
+        db.collection("UploadIntents").document(intent.intentId).delete()
     }
 
 }

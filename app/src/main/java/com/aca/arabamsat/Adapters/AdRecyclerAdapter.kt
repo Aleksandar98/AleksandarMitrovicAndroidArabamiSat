@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aca.arabamsat.Models.Ad
 import com.aca.arabamsat.R
 import com.bumptech.glide.Glide
+import com.squareup.picasso.Picasso
 
 class AdRecyclerAdapter() :
     RecyclerView.Adapter<AdRecyclerAdapter.ViewHolder>() {
@@ -55,6 +56,7 @@ class AdRecyclerAdapter() :
         if(dataSet.get(position).pictures.isNotEmpty()) {
             Glide.with(holder.carImg).load(dataSet.get(position).pictures.get(0))
                 .into(holder.carImg)
+
         }
     }
 
