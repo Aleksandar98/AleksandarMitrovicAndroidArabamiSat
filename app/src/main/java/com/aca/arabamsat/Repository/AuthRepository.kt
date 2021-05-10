@@ -1,19 +1,19 @@
 package com.aca.arabamsat.Repository
 
 import android.util.Log
-import android.widget.Toast
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.aca.arabamsat.LoginActivity
 import com.aca.arabamsat.Models.User
 import com.facebook.AccessToken
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 
+
 class AuthRepository @Inject constructor(
-     val firebaseAuth:FirebaseAuth
+     val firebaseAuth:FirebaseAuth,
+     val db: FirebaseFirestore
 ){
 
     private  val TAG = "myTag"
@@ -41,7 +41,8 @@ class AuthRepository @Inject constructor(
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithEmail:success")
                     val user = firebaseAuth.currentUser
-                    logedInUser = User(user.email,user.displayName)
+                    logedInUser = User(user.uid,user.email,user.displayName, mutableListOf())
+
                     signInUser.value = logedInUser
                     isLogedInLiveData.postValue(true)
                     Log.d(TAG, "signInWithEmail:success value ${ signInUser.value}")
@@ -49,9 +50,6 @@ class AuthRepository @Inject constructor(
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithEmail:failure", task.exception)
-//                    Toast.makeText(baseContext, "Authentication failed.",
-//                        Toast.LENGTH_SHORT).show()
-                    // updateUI(null)
                 }
             }
         return signInUser
@@ -66,7 +64,8 @@ class AuthRepository @Inject constructor(
             .addOnSuccessListener { authResult ->
                 val email : String? = authResult.user.email
                 val displayName : String? = authResult.user.displayName
-                logedInUser = User(email,displayName)
+                val userid : String = authResult.user.uid
+                logedInUser = User(userid,email,displayName, mutableListOf())
                 isLogedInLiveData.postValue(true)
                 signInUser.value = logedInUser
                 Log.d(TAG, "handleFaceBookAccessToken: ${authResult.user.displayName}")
@@ -79,21 +78,19 @@ class AuthRepository @Inject constructor(
     }
 
     fun signInUserGoogle(idToken: String): MutableLiveData<User>{
-        lateinit var logedInUser:User
+        lateinit var user:User
         val signInUser:MutableLiveData<User> = MutableLiveData<User>()
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         firebaseAuth.signInWithCredential(credential)
             .addOnCompleteListener() { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success")
-                    val user = firebaseAuth.currentUser
-                    logedInUser = User(user.email,user.displayName)
+                    val userAuth = firebaseAuth.currentUser
+                    user = User(userAuth.uid,userAuth.email,userAuth.displayName, mutableListOf())
+
+                    createUserIfNotExists(user)
+
                     isLogedInLiveData.postValue(true)
-                    signInUser.value = logedInUser
-                    Log.d(TAG, "onStart: $user")
-                    //startActivity(mainActIntent)
-                    ///updateUI(currentUser)
+                    signInUser.value = user
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
@@ -101,6 +98,18 @@ class AuthRepository @Inject constructor(
                 }
             }
         return signInUser
+    }
+
+    private fun createUserIfNotExists(user: User){
+        Log.d(TAG, "createUserIfNotExists: proveravam da li postoji korisnik sa id ${user.userId}")
+        db.collection("Users").whereEqualTo("userId",user.userId).get()
+            .addOnCompleteListener {
+                if (it.getResult().isEmpty) {
+                    db.collection("Users").add(user)
+                }
+            }
+
+
     }
 
     fun logoutUser() {
@@ -124,14 +133,22 @@ class AuthRepository @Inject constructor(
             }
     }
 
-    fun crateUser(email: String, password: String): MutableLiveData<Boolean> {
+    fun crateUser(email: String, password: String,name:String): MutableLiveData<Boolean> {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener() { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "createUserWithEmail:success")
-                    val user = firebaseAuth.currentUser
-                    isUserCreatedLiveData.postValue(true)
+                    val userAuth = firebaseAuth.currentUser
+                    var user = User(userAuth.uid,userAuth.email,name, mutableListOf())
+                    db.collection("Users").add(user)
+                        .addOnSuccessListener {
+
+                            isUserCreatedLiveData.postValue(true)
+                        }
+                        .addOnFailureListener {
+                            isUserCreatedLiveData.postValue(false)
+                        }
 
                 } else {
                     // If sign in fails, display a message to the user.
@@ -142,4 +159,6 @@ class AuthRepository @Inject constructor(
             }
         return isUserCreatedLiveData
     }
+
+
 }

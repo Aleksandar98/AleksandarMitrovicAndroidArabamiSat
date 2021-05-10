@@ -7,10 +7,22 @@
         android:icon="@drawable/ic_logout"
         android:title="@string/action_logout"
         app:showAsAction="ifRoom"/>
+
     <item
         android:id="@+id/action_settings"
         android:icon="@drawable/ic_options_white"
         android:title="@string/action_settings"
-        app:showAsAction="always"/>
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/action_sortLocation"
+                android:title="@string/action_sortLocation"
+                app:showAsAction="always"/>
+            <item
+                android:id="@+id/action_showFavorites"
+                android:title="@string/action_showFavorites"
+                app:showAsAction="always"/>
+        </menu>
+    </item>
 
 </menu>

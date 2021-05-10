@@ -23,7 +23,8 @@ class SignUpActivity : AppCompatActivity() {
         signUpBtn.setOnClickListener {
             val email = emailEditTxt.text.toString()
             val password = passEditTxt.text.toString()
-            loginViewModel.createUser(email,password).observe(this, Observer {
+            val name = nameEditTxt.text.toString()
+            loginViewModel.createUser(email,password,name).observe(this, Observer {
                 if(it){
                     loginViewModel.signInWithEmailAndPassword(email,password)
                 }else{

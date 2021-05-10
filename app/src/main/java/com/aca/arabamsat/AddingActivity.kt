@@ -18,6 +18,7 @@ import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.aca.arabamsat.Models.Ad
 import com.aca.arabamsat.ViewModels.AddingViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -88,15 +89,17 @@ class AddingActivity : AppCompatActivity() {
                 Toast.makeText(this,"Please fill in all fields",Toast.LENGTH_LONG).show()
             }else if(didUploadImages){
 
-                val adObject = hashMapOf(
-                    "model" to modelEdit.text.toString(),
-                    "year" to yearEdit.text.toString(),
-                    "price" to priceEdit.text.toString(),
-                    "userId" to firebaseAuth.currentUser.uid,
-                    "phoneNuber" to phoneEdit.text.toString(),
-                    "description" to descEdit.text.toString(),
-                    "email" to firebaseAuth.currentUser.email
-                )
+//                val adObject = hashMapOf(
+//                    "model" to modelEdit.text.toString(),
+//                    "year" to yearEdit.text.toString(),
+//                    "price" to priceEdit.text.toString(),
+//                    "userId" to firebaseAuth.currentUser.uid,
+//                    "phoneNumber" to phoneEdit.text.toString(),
+//                    "description" to descEdit.text.toString(),
+//                    "email" to firebaseAuth.currentUser.email
+//                )
+                var adObject = Ad("",yearEdit.text.toString(),modelEdit.text.toString(),priceEdit.text.toString(),firebaseAuth.currentUser.uid,phoneEdit.text.toString(),descEdit.text.toString(),firebaseAuth.currentUser.email,
+                    emptyList<String>())
 
                 addingViewModel.uploadAd(adObject,selectedData).observe(this, Observer {
                     if(it){

@@ -67,7 +67,6 @@ class LoginActivity : AppCompatActivity() {
         createAccTxt.setOnClickListener{
             val mainActIntent = Intent(this,SignUpActivity::class.java)
             startActivity(mainActIntent)
-            finish()
         }
 
         loginBtn.setOnClickListener {

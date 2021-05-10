@@ -8,5 +8,7 @@
     <string name="action_callAd">Call</string>
     <string name="action_emailAd">Email</string>
     <string name="action_favoriteAd">Add Favorite</string>
+    <string name="action_sortLocation">Sort by location</string>
+    <string name="action_showFavorites">Show favorites</string>
 
 </resources>

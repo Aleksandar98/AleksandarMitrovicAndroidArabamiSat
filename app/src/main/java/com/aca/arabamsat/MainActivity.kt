@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var storage: FirebaseStorage
     private val mainActivityViewModel: MainViewModel by viewModels()
     private lateinit var adAdapter: AdRecyclerAdapter
+    private var showingFavorites = false
     private  val TAG = "myTag"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,8 +105,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_settings -> {
-            // User chose the "Settings" item, show the app settings UI...
+        R.id.action_showFavorites -> {
+            if(showingFavorites){
+                item.title = "Show favorites"
+                showingFavorites = false
+                mainActivityViewModel.getAds().observe(this, Observer {
+                    adAdapter.submitList(it)
+                    adAdapter.notifyDataSetChanged()
+                })
+            }else{
+
+                showingFavorites = true
+                item.title = "Show all"
+                mainActivityViewModel.getFavoriteAds().observe(this, Observer {
+                    adAdapter.submitList(it)
+                    adAdapter.notifyDataSetChanged()
+                })
+            }
+
             true
         }
 

@@ -42,7 +42,7 @@ class LoginViewModel @Inject constructor(
         authRepository.sendPasswordResetMail()
     }
 
-    fun createUser(email: String, password: String):LiveData<Boolean> {
-        return authRepository.crateUser(email,password)
+    fun createUser(email: String, password: String,name:String):LiveData<Boolean> {
+        return authRepository.crateUser(email,password,name)
     }
 }

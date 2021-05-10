@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import com.aca.arabamsat.Models.Ad
 import com.aca.arabamsat.Repository.AdRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -18,7 +19,7 @@ class AddingViewModel @Inject constructor(
     private val TAG = "myTag"
 
     fun uploadAd(
-        adObject: HashMap<String, String>,
+        adObject: Ad,
         data: Intent?
     ):LiveData<Boolean> {
 

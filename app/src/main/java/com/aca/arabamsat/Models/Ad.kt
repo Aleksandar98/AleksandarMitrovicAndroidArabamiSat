@@ -3,14 +3,15 @@ package com.aca.arabamsat.Models
 import java.io.Serializable
 
 data class Ad (
-    val year:String,
-    val model:String,
-    val price:String,
-    val userId:String,
-    val phoneNuber:String,
-    val description:String,
-    val userName:String,
-    val pictures:List<String>
+    var adId:String,
+    var year:String,
+    var model:String,
+    var price:String,
+    var userId:String,
+    var phoneNumber:String,
+    var description:String,
+    var userName:String,
+    var pictures:List<String>
 ): Serializable{
-    constructor():this("","","","","","","", emptyList())
+    constructor():this("","","","","","","","", emptyList())
 }

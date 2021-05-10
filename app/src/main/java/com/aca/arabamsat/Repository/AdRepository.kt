@@ -51,15 +51,16 @@ class AdRepository @Inject constructor(
     }
 
     fun uploadAd(
-        adObject: HashMap<String, String>,
+        adObject: Ad,
         uriList: List<Uri>
     ):MutableLiveData<Boolean> {
 
         var isUploadingLiveData:MutableLiveData<Boolean> = MutableLiveData(true)
-        db.collection("Ads")
-            .add(adObject)
+        val newAdRef = db.collection("Ads").document()
+        adObject.adId = newAdRef.id
+        newAdRef.set(adObject)
             .addOnSuccessListener { documentReference ->
-                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                Log.d(TAG, "DocumentSnapshot added with ID: ${adObject.adId}")
 
                 val imageCount = uriList.size
                 var i = 0
@@ -69,7 +70,7 @@ class AdRepository @Inject constructor(
                         val uri: Uri? = uriList.get(i)
 
 
-                        val carImagesRef = storageRef.child("ads/${documentReference.id}/i_$i.jpg")
+                        val carImagesRef = storageRef.child("ads/${adObject.adId}/i_$i.jpg")
 
                         val uploadTask = uri?.let { it1 -> carImagesRef.putFile(it1).await() }
                         val url: Uri = carImagesRef.downloadUrl.await()
@@ -80,7 +81,7 @@ class AdRepository @Inject constructor(
                     Log.d(TAG, "onCreate: urlList Size ${uploadImgUrls.size}")
                     for(url in uploadImgUrls){Log.d(TAG, "onCreate: url ${url}")}
 
-                    db.collection("Ads").document(documentReference.id)
+                    db.collection("Ads").document(adObject.adId)
                         .update("pictures", uploadImgUrls)
                         .addOnSuccessListener {
                            // Toast.makeText(this@AddingActivity,"Ad Published!", Toast.LENGTH_LONG).show()
@@ -95,7 +96,14 @@ class AdRepository @Inject constructor(
                // Toast.makeText(this@AddingActivity,"Error publishing your Ad", Toast.LENGTH_LONG).show()
                 Log.w(TAG, "Error adding document", e)
             }
+
         return isUploadingLiveData
+    }
+
+
+
+    fun sortByLocation(){
+
     }
 
     fun isDataBaseEmpry():Boolean {

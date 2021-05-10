@@ -124,7 +124,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
-                        android:text="Model"/>
+                        android:text="Year"/>
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/valueTextView2"
@@ -149,7 +149,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
-                        android:text="Model"/>
+                        android:text="Username"/>
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/valueTextView3"
@@ -174,18 +174,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
-                        android:text="Model"/>
+                        android:text="Descrition"/>
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/valueTextView4"
-                        android:textColor="@color/black"
-                        android:layout_weight="1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:text="Passat CC"
-                        android:gravity="right"
-                        android:textStyle="bold"/>
+
 
                 </LinearLayout>
                 <LinearLayout
@@ -195,21 +186,13 @@
                     android:layout_margin="5dp">
 
                     <com.google.android.material.textview.MaterialTextView
-                        android:layout_weight="1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:text="Model"/>
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/valueTextView5"
+                        android:id="@+id/valueTextView4"
                         android:textColor="@color/black"
                         android:layout_weight="1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
                         android:text="Passat CC"
-                        android:gravity="right"
                         android:textStyle="bold"/>
 
                 </LinearLayout>
