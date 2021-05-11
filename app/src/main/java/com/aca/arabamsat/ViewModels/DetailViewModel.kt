@@ -15,11 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    val adRepository: AdRepository,
     val userRepository: UserRepository
 ): ViewModel(){
-
-    val TAG = "myTag"
 
     fun addAdToFavorite(adId:String){
         userRepository.addToFavorite(adId)

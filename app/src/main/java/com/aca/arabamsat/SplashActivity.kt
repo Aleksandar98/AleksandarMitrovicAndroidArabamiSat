@@ -22,10 +22,6 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        //initLoginViewModel()
-
-
-
         loginViewModel.isLogedIn().observe(this, Observer {
             if(it){
                 val mainActIntent = Intent(this,MainActivity::class.java)
@@ -37,27 +33,5 @@ class SplashActivity : AppCompatActivity() {
                 finish()
             }
         })
-    }
-
-//    override fun onStart() {
-//        super.onStart()
-//
-//        val currentUser = firebaseAuth.currentUser
-//
-//        Log.d("myTag", "onStart: ${currentUser.email}")
-//        if(currentUser!= null){
-//            val mainActIntent = Intent(this,MainActivity::class.java)
-//            startActivity(mainActIntent)
-//            finish()
-//
-//        }else{
-//            val loginActIntent = Intent(this,LoginActivity::class.java)
-//            startActivity(loginActIntent)
-//            finish()
-//        }
-//    }
-
-    private fun initLoginViewModel() {
-        //loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
     }
 }

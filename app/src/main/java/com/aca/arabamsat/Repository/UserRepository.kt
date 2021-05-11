@@ -19,26 +19,26 @@ class UserRepository @Inject constructor(
     val db: FirebaseFirestore,
     val authRepository: AuthRepository,
     val storageRef: StorageReference
-){
+) {
 
-    val TAG:String = "myTag"
+    val TAG: String = "myTag"
     var isAdFavoriteLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
     fun getAllFavoriteAds(): MutableLiveData<ArrayList<Ad>> {
 
         val userId = authRepository.firebaseAuth.currentUser?.uid
 
-        var favAdsListLiveData:MutableLiveData<ArrayList<Ad>> = MutableLiveData()
-        var favAdsList:ArrayList<Ad> = ArrayList()
+        var favAdsListLiveData: MutableLiveData<ArrayList<Ad>> = MutableLiveData()
+        var favAdsList: ArrayList<Ad> = ArrayList()
         db.collection("Users").whereEqualTo("userId", userId).get()
             .addOnCompleteListener {
-                if (!it.getResult().isEmpty) {
-                    var document = it.getResult().documents.get(0)
+                if (!it.result.isEmpty) {
+                    var document = it.result.documents.get(0)
                     val favoriteAdsList = document.data?.get("favoriteAds") as ArrayList<String>
-                    if(favoriteAdsList.isEmpty()){
+                    if (favoriteAdsList.isEmpty()) {
                         favAdsListLiveData.postValue(favAdsList)
-                    }else{
-                        for(adId in favoriteAdsList){
+                    } else {
+                        for (adId in favoriteAdsList) {
                             db.collection("Ads").document(adId).get()
                                 .addOnSuccessListener {
                                     it.toObject(Ad::class.java)?.let { it1 -> favAdsList.add(it1) }
@@ -57,11 +57,11 @@ class UserRepository @Inject constructor(
         currentUserId?.let {
             db.collection("Users").whereEqualTo("userId", it).get()
                 .addOnCompleteListener {
-                    if (!it.getResult().isEmpty) {
-                        var document = it.getResult().documents.get(0)
+                    if (!it.result.isEmpty) {
+                        var document = it.result.documents.get(0)
                         val favoriteAdsList = document.data?.get("favoriteAds") as ArrayList<String>
 
-                        if(favoriteAdsList.contains(adId))
+                        if (favoriteAdsList.contains(adId))
                             isAdFavoriteLiveData.postValue(true)
                         else
                             isAdFavoriteLiveData.postValue(false)
@@ -75,27 +75,23 @@ class UserRepository @Inject constructor(
 
         val currentUserId = authRepository.firebaseAuth.currentUser?.uid
 
-        currentUserId?.let{
-            db.collection("Users").whereEqualTo("userId",it).get()
+        currentUserId?.let {
+            db.collection("Users").whereEqualTo("userId", it).get()
                 .addOnCompleteListener {
-                    if (!it.getResult().isEmpty) {
+                    if (!it.result.isEmpty) {
 
-                        var document = it.getResult().documents.get(0)
+                        var document = it.result.documents.get(0)
 
                         val oldList = document.data?.get("favoriteAds") as ArrayList<String>
-
-                        if(oldList.contains(adId)){
+                        if (oldList.contains(adId)) {
                             oldList.remove(adId)
                             isAdFavoriteLiveData.postValue(false)
-                        }else{
+                        } else {
                             oldList.add(adId)
                             isAdFavoriteLiveData.postValue(true)
-
                         }
-
                         db.collection("Users").document(document.id)
-                            .update("favoriteAds",oldList)
-
+                            .update("favoriteAds", oldList)
                     }
                 }
         }
@@ -105,28 +101,29 @@ class UserRepository @Inject constructor(
     fun uploadCachedImages() {
         val currentUserId = authRepository.firebaseAuth.currentUser?.uid
 
-        db.collection("UploadIntents").whereEqualTo("userId",currentUserId).addSnapshotListener{snapshot,e ->
-            val listIntents = snapshot?.toObjects(UploadIntent::class.java)
-            if (listIntents != null) {
-                for((index,intent) in listIntents.withIndex()){
-                    uploadImage(intent)
-                }
+        db.collection("UploadIntents").whereEqualTo("userId", currentUserId)
+            .addSnapshotListener { snapshot, e ->
+                val listIntents = snapshot?.toObjects(UploadIntent::class.java)
+                if (listIntents != null) {
+                    for ((index, intent) in listIntents.withIndex()) {
+                        uploadImage(intent)
+                    }
 
+                }
             }
-        }
     }
 
     private fun uploadImage(intent: UploadIntent) {
-        val listUploadedUris:MutableList<String> = mutableListOf()
+        val listUploadedUris: MutableList<String> = mutableListOf()
 
         GlobalScope.launch(Dispatchers.IO) {
-            for ((index,filePath) in intent.filePaths?.withIndex()!!) {
+            for ((index, filePath) in intent.filePaths?.withIndex()!!) {
 
                 val carImagesRef = storageRef.child("ads/${intent.adId}/i_$index.jpg")
 
                 var file = Uri.fromFile(File(filePath))
 
-                val uploadTask = filePath?.let { it1 -> carImagesRef.putFile(file).await() }
+                val uploadTask = filePath.let { it1 -> carImagesRef.putFile(file).await() }
                 val url: Uri = carImagesRef.downloadUrl.await()
                 Log.d(TAG, "uploadImage: DOBIJENI URL ${url}")
                 listUploadedUris.add(url.toString())
@@ -145,5 +142,6 @@ class UserRepository @Inject constructor(
     private fun deleteUploadIntent(intent: UploadIntent) {
         db.collection("UploadIntents").document(intent.intentId).delete()
     }
+
 
 }

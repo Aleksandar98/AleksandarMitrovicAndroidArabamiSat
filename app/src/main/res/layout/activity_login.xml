@@ -60,6 +60,7 @@
             />
 
         <com.google.android.material.button.MaterialButton
+            android:backgroundTint="@color/colorAccent"
             android:id="@+id/loginBtn"
             android:layout_width="300dp"
             android:layout_height="wrap_content"

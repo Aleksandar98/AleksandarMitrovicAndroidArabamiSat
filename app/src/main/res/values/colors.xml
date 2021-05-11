@@ -10,6 +10,7 @@
     <color name="blue2">#cbf1f5</color>
     <color name="blue3">#a6e3e9</color>
     <color name="blue4">#71c9ce</color>
+    <color name="lightOrange">#FFD899</color>
 
     <color name="black">#000000</color>
 </resources>

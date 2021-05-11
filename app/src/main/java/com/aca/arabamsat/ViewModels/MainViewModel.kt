@@ -1,5 +1,6 @@
 package com.aca.arabamsat.ViewModels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,8 +19,6 @@ class MainViewModel @Inject constructor(
 ) :ViewModel(){
 
     private var isLoading:MutableLiveData<Boolean> = MutableLiveData()
-    private var _ads:MutableLiveData<Boolean> = MutableLiveData()
-
 
     fun getAds():LiveData<List<Ad>> {
         isLoading.postValue(true)
@@ -40,20 +39,22 @@ class MainViewModel @Inject constructor(
         return authRepository.isLogedIn()
     }
 
-    fun isDatabaseEmpty():Boolean {
-        return adRepository.isDataBaseEmpry()
-
-    }
-
     fun getFavoriteAds(): LiveData<ArrayList<Ad>> {
         isLoading.postValue(true)
         var liveData = userRepository.getAllFavoriteAds()
         isLoading.postValue(false)
         return liveData
-       // userRepository.getAllFavoriteAds()
     }
     fun uploadCachedImages(){
         userRepository.uploadCachedImages()
+    }
+
+    fun getAdsByLocation(userLocationLat: Double, userLocationLon: Double):  LiveData<ArrayList<Ad>> {
+        isLoading.postValue(true)
+        var liveData = adRepository.getAdsByLocation(userLocationLon,userLocationLat)
+        Log.d("myTag", "getAdsByLocation: ${userLocationLon} == ${userLocationLat}")
+        isLoading.postValue(false)
+        return liveData
     }
 
 

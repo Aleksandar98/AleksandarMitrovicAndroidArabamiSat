@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background2"
     tools:context=".MainActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -14,15 +15,6 @@
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-
-    <TextView
-        android:id="@+id/databaseEmptyTxt"
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/databse_empty"
-        android:layout_centerInParent="true"
-        android:textSize="25dp"/>
 
     <ProgressBar
         android:layout_centerInParent="true"
@@ -40,6 +32,7 @@
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        app:backgroundTint="@color/lightOrange"
         android:backgroundTint="@color/colorAccent"
         android:id="@+id/fab"
         android:layout_width="wrap_content"

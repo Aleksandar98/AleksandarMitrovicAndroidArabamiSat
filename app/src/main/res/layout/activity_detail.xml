@@ -11,6 +11,13 @@
     android:layout_width="match_parent"
     android:layout_height="270dp"
     android:id="@+id/mainImgRecy"/>
+    <com.google.android.material.textview.MaterialTextView
+        android:text="3 Images"
+        android:gravity="center"
+        android:layout_below="@id/mainImgRecy"
+        android:id="@+id/pageNumberTxt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 <!--    <androidx.constraintlayout.motion.widget.MotionLayout-->
 <!--        android:id="@+id/mainImg"-->
@@ -37,7 +44,7 @@
 <!--    </androidx.constraintlayout.motion.widget.MotionLayout>-->
 
     <LinearLayout
-        android:layout_below="@id/mainImgRecy"
+        android:layout_below="@id/pageNumberTxt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -56,9 +63,10 @@
             app:cardCornerRadius="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/darkOrange">
+            app:cardBackgroundColor="@color/colorAccent">
 
             <com.google.android.material.textview.MaterialTextView
+
                 android:id="@+id/carDetailPriceTxt"
                 android:textSize="20sp"
                 android:padding="5dp"
@@ -80,7 +88,7 @@
         <ScrollView
             android:layout_width="match_parent"
                    android:layout_height="wrap_content"
-                    android:id="@+id/carInfoRecyclerView"
+                    android:id="@+id/carInfoScrollView"
                     android:layout_margin="5dp"
                     tools:listitem="@layout/detail_img_item">
             <LinearLayout

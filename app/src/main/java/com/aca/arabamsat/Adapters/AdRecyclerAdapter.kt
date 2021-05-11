@@ -13,7 +13,7 @@ import com.aca.arabamsat.R
 import com.bumptech.glide.Glide
 import com.squareup.picasso.Picasso
 
-class AdRecyclerAdapter() :
+class AdRecyclerAdapter :
     RecyclerView.Adapter<AdRecyclerAdapter.ViewHolder>() {
 
     private var dataSet: List<Ad> = ArrayList()

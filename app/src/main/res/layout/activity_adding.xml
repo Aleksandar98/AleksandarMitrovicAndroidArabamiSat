@@ -4,9 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background2"
     tools:context=".AddingActivity">
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        app:title="New Car Ad"
+        android:id="@+id/toolbarAdd"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
@@ -21,9 +23,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <ScrollView
+        android:paddingTop="?attr/actionBarSize"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
     <LinearLayout
         android:id="@+id/inputHolder"
-        android:layout_centerInParent="true"
         android:gravity="center"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -89,6 +102,6 @@
         android:layout_height="60dp"
         android:text="Publish Ad"
         android:layout_centerHorizontal="true"/>
-
-
+    </RelativeLayout>
+    </ScrollView>
 </RelativeLayout>

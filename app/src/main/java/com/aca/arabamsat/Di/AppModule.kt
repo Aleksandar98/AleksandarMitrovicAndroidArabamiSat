@@ -1,6 +1,8 @@
 package com.aca.arabamsat.Di
 
 import android.content.Context
+import com.aca.arabamsat.Interfaces.AdRepo
+import com.aca.arabamsat.Repository.AdRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -45,4 +47,10 @@ object AppModule {
             .build()
         return GoogleSignIn.getClient(context, gso)
     }
+
+    @Provides
+    @Singleton
+    fun provideAdRepository(
+        db: FirebaseFirestore
+    ) = AdRepository(db) as AdRepo
 }

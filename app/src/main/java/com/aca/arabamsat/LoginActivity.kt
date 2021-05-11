@@ -36,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var mainActIntent: Intent
     private val loginViewModel: LoginViewModel by viewModels()
 
-    private companion object{
+    private companion object {
         private const val RC_SIGN_IN = 100
         private const val TAG = "myTag"
     }
@@ -47,7 +47,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
 
-        mainActIntent = Intent(this,MainActivity::class.java)
+        mainActIntent = Intent(this, MainActivity::class.java)
 
         firebaseAuth = FirebaseAuth.getInstance()
         callBackManager = CallbackManager.Factory.create()
@@ -60,22 +60,22 @@ class LoginActivity : AppCompatActivity() {
             signInFacebook()
         }
 
-        forgotPassTxt.setOnClickListener{
+        forgotPassTxt.setOnClickListener {
             showConfirmResetDialog()
         }
 
-        createAccTxt.setOnClickListener{
-            val mainActIntent = Intent(this,SignUpActivity::class.java)
+        createAccTxt.setOnClickListener {
+            val mainActIntent = Intent(this, SignUpActivity::class.java)
             startActivity(mainActIntent)
         }
 
         loginBtn.setOnClickListener {
-            signInEmailPass(emailEditTxt.text.toString(),passEditTxt.text.toString())
+            signInEmailPass(emailEditTxt.text.toString(), passEditTxt.text.toString())
         }
 
         loginViewModel.isLogedIn().observe(this, Observer {
-            if(it){
-                val mainActIntent = Intent(this,MainActivity::class.java)
+            if (it) {
+                val mainActIntent = Intent(this, MainActivity::class.java)
                 startActivity(mainActIntent)
                 finish()
             }
@@ -85,17 +85,17 @@ class LoginActivity : AppCompatActivity() {
     private fun showConfirmResetDialog() {
 
         val editText = EditText(this)
-        editText.setInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+        editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
 
 
         MaterialAlertDialogBuilder(this)
             .setTitle("Reset password")
             .setMessage("Enter email address assosiated with your account")
             .setView(editText)
-            .setPositiveButton("Send"){dialog,which->
+            .setPositiveButton("Send") { dialog, which ->
                 loginViewModel.sendPasswordResetMail()
             }
-            .setNegativeButton("Cancel"){dialog,which->
+            .setNegativeButton("Cancel") { dialog, which ->
                 dialog.cancel()
             }
             .show()
@@ -107,25 +107,20 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-    private fun signInFacebook(){
-        fBbutton.registerCallback(callBackManager,object:FacebookCallback<LoginResult>{
+    private fun signInFacebook() {
+        fBbutton.registerCallback(callBackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult?) {
                 loginViewModel.signInFacebook(result!!.accessToken)
-               // handleFaceBookAccessToken(result!!.accessToken)
             }
 
             override fun onCancel() {
-                TODO("Not yet implemented")
             }
 
             override fun onError(error: FacebookException?) {
-                TODO("Not yet implemented")
             }
 
         })
     }
-
-
 
 
     private fun signInGoogle() {
@@ -137,21 +132,17 @@ class LoginActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
-                // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)!!
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
                 loginViewModel.signInGoogle(account.idToken!!)
-                //firebaseAuthWithGoogle(account.idToken!!)
             } catch (e: ApiException) {
-                // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e)
             }
         }
-        callBackManager.onActivityResult(requestCode,resultCode, data)
+        callBackManager.onActivityResult(requestCode, resultCode, data)
     }
 
 }

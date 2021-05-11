@@ -1,9 +1,9 @@
 package com.aca.arabamsat
 
-import android.R.attr
+import android.Manifest
 import android.content.Intent
-import android.net.Uri
-import android.opengl.Visibility
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -13,28 +13,17 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aca.arabamsat.Adapters.AdRecyclerAdapter
-import com.aca.arabamsat.Models.Ad
 import com.aca.arabamsat.ViewModels.MainViewModel
-import com.bumptech.glide.Glide
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.storage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
-import java.io.InputStream
-import java.lang.StringBuilder
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -45,7 +34,11 @@ class MainActivity : AppCompatActivity() {
     private val mainActivityViewModel: MainViewModel by viewModels()
     private lateinit var adAdapter: AdRecyclerAdapter
     private var showingFavorites = false
-    private  val TAG = "myTag"
+    private var showingLocationSort = true
+    private val TAG = "myTag"
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var userLocationLat: Double = 0.0
+    private var userLocationLon: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +47,8 @@ class MainActivity : AppCompatActivity() {
 
         initRecyclerView()
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
         mainActivityViewModel.getAds().observe(this, Observer {
             adAdapter.submitList(it)
             adAdapter.notifyDataSetChanged()
@@ -61,33 +56,27 @@ class MainActivity : AppCompatActivity() {
 
         mainActivityViewModel.isLoading().observe(this, Observer {
             //TODO Fix
-            if(!it)
+            if (!it)
                 progressBar.visibility = GONE
         })
 
         mainActivityViewModel.isLogedIn().observe(this, Observer {
-            if(!it){
-                val loginActIntent = Intent(this,LoginActivity::class.java)
+            if (!it) {
+                val loginActIntent = Intent(this, LoginActivity::class.java)
                 startActivity(loginActIntent)
                 finish()
             }
         })
 
-        if(mainActivityViewModel.isDatabaseEmpty()){
-            //TODO Fix dinamic change
-            databaseEmptyTxt.visibility = VISIBLE
-        }
-
-
         fab.setOnClickListener {
-            val intent = Intent(this,AddingActivity::class.java)
+            val intent = Intent(this, AddingActivity::class.java)
             startActivity(intent)
         }
 
         adAdapter.onItemClick = { ad ->
             Log.d(TAG, "onCreate: item: ${ad.model}")
-            val intent = Intent(this,DetailActivity::class.java)
-            intent.putExtra("selectedAd",ad)
+            val intent = Intent(this, DetailActivity::class.java)
+            intent.putExtra("selectedAd", ad)
             startActivity(intent)
         }
 
@@ -106,16 +95,50 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    private fun getUserLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                99
+            )
+
+            return
+        } else {
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    if (location != null) {
+                        userLocationLat = location.latitude
+                        userLocationLon = location.longitude
+                        mainActivityViewModel.getAdsByLocation(userLocationLat, userLocationLon)
+                            .observe(this, Observer {
+                                for (ad in it)
+                                    Log.d(TAG, "onRequestPermissionsResult: sortirano ${ad}")
+                                adAdapter.submitList(it)
+                                adAdapter.notifyDataSetChanged()
+                            })
+                    }
+                }
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_showFavorites -> {
-            if(showingFavorites){
+            if (showingFavorites) {
                 item.title = "Show favorites"
                 showingFavorites = false
                 mainActivityViewModel.getAds().observe(this, Observer {
                     adAdapter.submitList(it)
                     adAdapter.notifyDataSetChanged()
                 })
-            }else{
+            } else {
 
                 showingFavorites = true
                 item.title = "Show all"
@@ -128,22 +151,73 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+        R.id.action_sortLocation -> {
+            if (!showingLocationSort) {
+                getUserLocation()
+                item.title = "Sort by location"
+                showingLocationSort = true
+
+            } else {
+
+                showingLocationSort = false
+                item.title = "Don't sort by location"
+                mainActivityViewModel.getAds().observe(this, Observer {
+                    adAdapter.submitList(it)
+                    adAdapter.notifyDataSetChanged()
+                })
+            }
+            true
+        }
+
         R.id.action_logout -> {
             mainActivityViewModel.logoutUser()
             true
         }
 
         else -> {
-            // If we got here, the user's action was not recognized.
-            // Invoke the superclass to handle it.
+
             super.onOptionsItemSelected(item)
         }
     }
 
-    fun initRecyclerView(){
+    fun initRecyclerView() {
         adAdapter = AdRecyclerAdapter()
 
         carsRecyclerView.layoutManager = LinearLayoutManager(this)
         carsRecyclerView.adapter = adAdapter
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    userLocationLat = location.latitude
+                    userLocationLon = location.longitude
+                    mainActivityViewModel.getAdsByLocation(userLocationLat, userLocationLon)
+                        .observe(this, Observer {
+                            for (ad in it)
+                                Log.d(TAG, "onRequestPermissionsResult: sortirano ${ad}")
+                            adAdapter.submitList(it)
+                            adAdapter.notifyDataSetChanged()
+                        })
+                }
+            }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 }

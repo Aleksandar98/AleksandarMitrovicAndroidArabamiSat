@@ -14,17 +14,15 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     val authRepository: AuthRepository
 ) : ViewModel() {
-    private  val TAG = "myTag"
 
     private var authenticatedUserLiveData = MutableLiveData<User>()
 
-    fun getAuthenticatedUser():LiveData<User>{
-        return authenticatedUserLiveData
-    }
+//    fun getAuthenticatedUser():LiveData<User>{
+//        return authenticatedUserLiveData
+//    }
 
     fun signInWithEmailAndPassword(email: String, pass: String): MutableLiveData<User> {
         return authRepository.signInUserEmail(email,pass)
-       // Log.d(TAG, "signInWithEmailAndPasswordVM: ${authenticatedUserLiveData.value}")
     }
 
     fun signInFacebook(accessToken: AccessToken?) {
@@ -35,7 +33,7 @@ class LoginViewModel @Inject constructor(
         authRepository.signInUserGoogle(idToken)
     }
     fun isLogedIn():LiveData<Boolean>{
-        return authRepository.isLogedIn();
+        return authRepository.isLogedIn()
     }
 
     fun sendPasswordResetMail() {
