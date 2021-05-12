@@ -19,7 +19,7 @@ Arabami Sat is an application that allows you to:
 ### Add Activity
 ![](https://i.ibb.co/HxPMgCm/img3.png)
 * Add your own car Ad
- **Support for muliple image upload**
+ **Support for multiple image upload**
 
 
 ### Detail Activity
@@ -47,16 +47,25 @@ Arabami Sat is an application that allows you to:
 
 ### Description:
 
-All buisness logic is kept out of activies they only interact with views and obsereve **LiveData** changes from view models
+All business logic is kept out of activities they only interact with views and observe **LiveData** changes from view models
 
-Every activity has its own **ViewModel** 
+Every activity has its own **ViewModel**
 
 Every model has its own repository from where it is fetched
 
-Adding external database hosted on cloud service provider would only change repository class and that would mean that we need to implement chaching wiht **Room** and use **Retrofit** to fetch data 
+Adding external database hosted on cloud service provider would only change repository class and that would mean that we need to implement caching with **Room** and use **Retrofit** to fetch data
 
 **Room** is not used here because of firebase's caching of local paths, it would be obsolete and unnecessary.
-When uploading images offline, firebase stores local paths for images and stores upload intent in new document on firestore. **Firebase function** (*since this is paid feature I build my own observer inside an app*) observes document and automaticly upload those images intended to be uploaded when online.In that context there are no local paths being stored.
+When uploading images offline, firebase stores local paths for images and stores upload intent in new document on firestore. **Firebase function** (*since this is paid feature I build my own observer inside an app*) observes document and automatically upload those images intended to be uploaded when online.In that context there are no local paths being stored.
+
+#### Testing:
+While testing MVVM architecture I am creating **Fake repositories** since it is not good practice to contact database nor ResfulAPI in tests because they are slow.
+
+Fake repositories are injected in the view model and used for test.
+
+Only DetailViewModel and AddingViewModel are tested since authentication is done using firebase and that requires internet connection
+
+
 
 
 ### Possible upgrades:
@@ -67,7 +76,10 @@ When uploading images offline, firebase stores local paths for images and stores
 * Comment section for ad
 * Video upload
 * Google map integration
-
+* Pagination
+* Navigation components
+* Integretion tests
+* UI test
 
 
 
