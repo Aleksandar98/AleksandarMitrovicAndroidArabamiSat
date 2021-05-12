@@ -6,6 +6,7 @@ import android.text.InputType
 import android.util.Log
 import android.util.Xml
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -38,7 +39,6 @@ class LoginActivity : AppCompatActivity() {
 
     private companion object {
         private const val RC_SIGN_IN = 100
-        private const val TAG = "myTag"
     }
 
 
@@ -93,7 +93,7 @@ class LoginActivity : AppCompatActivity() {
             .setMessage("Enter email address assosiated with your account")
             .setView(editText)
             .setPositiveButton("Send") { dialog, which ->
-                loginViewModel.sendPasswordResetMail()
+                loginViewModel.sendPasswordResetMail(editText.text.toString())
             }
             .setNegativeButton("Cancel") { dialog, which ->
                 dialog.cancel()
@@ -102,7 +102,9 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun signInEmailPass(email: String, pass: String) {
-        loginViewModel.signInWithEmailAndPassword(email, pass)
+        loginViewModel.signInWithEmailAndPassword(email, pass).observe(this, Observer {
+            Toast.makeText(this,it,Toast.LENGTH_LONG).show()
+        })
 
     }
 
@@ -136,10 +138,8 @@ class LoginActivity : AppCompatActivity() {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 val account = task.getResult(ApiException::class.java)!!
-                Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
                 loginViewModel.signInGoogle(account.idToken!!)
             } catch (e: ApiException) {
-                Log.w(TAG, "Google sign in failed", e)
             }
         }
         callBackManager.onActivityResult(requestCode, resultCode, data)

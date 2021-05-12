@@ -31,9 +31,7 @@ import androidx.annotation.RequiresApi
 class DetailActivity : AppCompatActivity() {
 
     private lateinit var globalPhoneNumber: String
-    val TAG = "myTag"
     private val detailViewModel: DetailViewModel by viewModels()
-    private var selectedIndex: Int = 0
 
     private lateinit var adAdapter: ImgsRecyclerAdapter
 

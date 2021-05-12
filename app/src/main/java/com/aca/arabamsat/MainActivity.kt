@@ -28,14 +28,10 @@ import kotlinx.android.synthetic.main.activity_main.*
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-
-    private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var storage: FirebaseStorage
     private val mainActivityViewModel: MainViewModel by viewModels()
     private lateinit var adAdapter: AdRecyclerAdapter
     private var showingFavorites = false
-    private var showingLocationSort = true
-    private val TAG = "myTag"
+    private var showingLocationSort = false
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var userLocationLat: Double = 0.0
     private var userLocationLon: Double = 0.0
@@ -55,7 +51,6 @@ class MainActivity : AppCompatActivity() {
         })
 
         mainActivityViewModel.isLoading().observe(this, Observer {
-            //TODO Fix
             if (!it)
                 progressBar.visibility = GONE
         })
@@ -74,7 +69,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         adAdapter.onItemClick = { ad ->
-            Log.d(TAG, "onCreate: item: ${ad.model}")
             val intent = Intent(this, DetailActivity::class.java)
             intent.putExtra("selectedAd", ad)
             startActivity(intent)
@@ -119,8 +113,6 @@ class MainActivity : AppCompatActivity() {
                         userLocationLon = location.longitude
                         mainActivityViewModel.getAdsByLocation(userLocationLat, userLocationLon)
                             .observe(this, Observer {
-                                for (ad in it)
-                                    Log.d(TAG, "onRequestPermissionsResult: sortirano ${ad}")
                                 adAdapter.submitList(it)
                                 adAdapter.notifyDataSetChanged()
                             })
@@ -154,13 +146,14 @@ class MainActivity : AppCompatActivity() {
         R.id.action_sortLocation -> {
             if (!showingLocationSort) {
                 getUserLocation()
-                item.title = "Sort by location"
+                item.title = "Don't sort by location"
                 showingLocationSort = true
 
             } else {
 
                 showingLocationSort = false
-                item.title = "Don't sort by location"
+
+                item.title = "Sort by location"
                 mainActivityViewModel.getAds().observe(this, Observer {
                     adAdapter.submitList(it)
                     adAdapter.notifyDataSetChanged()
@@ -210,8 +203,6 @@ class MainActivity : AppCompatActivity() {
                     userLocationLon = location.longitude
                     mainActivityViewModel.getAdsByLocation(userLocationLat, userLocationLon)
                         .observe(this, Observer {
-                            for (ad in it)
-                                Log.d(TAG, "onRequestPermissionsResult: sortirano ${ad}")
                             adAdapter.submitList(it)
                             adAdapter.notifyDataSetChanged()
                         })

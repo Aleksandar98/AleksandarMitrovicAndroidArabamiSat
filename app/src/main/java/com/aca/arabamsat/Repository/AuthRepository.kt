@@ -16,7 +16,6 @@ class AuthRepository @Inject constructor(
     val db: FirebaseFirestore
 ) {
 
-    private val TAG = "myTag"
     var isLogedInLiveData: MutableLiveData<Boolean>
     var isUserCreatedLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -30,28 +29,21 @@ class AuthRepository @Inject constructor(
     }
 
 
-    fun signInUserEmail(email: String, pass: String): MutableLiveData<User> {
-        lateinit var logedInUser: User
-        val signInUser: MutableLiveData<User> = MutableLiveData<User>()
+    fun signInUserEmail(email: String, pass: String): MutableLiveData<String> {
+        //lateinit var logedInUser: User
+        val message: MutableLiveData<String> = MutableLiveData<String>()
         firebaseAuth.signInWithEmailAndPassword(email, pass)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val user = firebaseAuth.currentUser
-                    logedInUser = User(
-                        user.uid,
-                        user.email,
-                        user.displayName,
-                        mutableListOf(),
-                        mutableListOf()
-                    )
-                    signInUser.value = logedInUser
-                    isLogedInLiveData.postValue(true)
 
-                } else {
+                    isLogedInLiveData.postValue(true)
 
                 }
             }
-        return signInUser
+            .addOnFailureListener { exception ->
+                message.postValue(exception.message)
+            }
+        return message
 
     }
 
@@ -97,8 +89,6 @@ class AuthRepository @Inject constructor(
                     signInUser.value = user
                 } else {
 
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
-
                 }
             }
         return signInUser
@@ -123,8 +113,8 @@ class AuthRepository @Inject constructor(
         return isLogedInLiveData
     }
 
-    fun sendPasswordResetMail() {
-        firebaseAuth.sendPasswordResetEmail(firebaseAuth.currentUser.email)
+    fun sendPasswordResetMail(email:String) {
+        firebaseAuth.sendPasswordResetEmail(email)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
 

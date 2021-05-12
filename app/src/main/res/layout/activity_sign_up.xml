@@ -42,7 +42,7 @@
             <com.google.android.material.textfield.TextInputEditText
 
                 android:id="@+id/passEditTxt"
-                android:inputType="textEmailAddress"
+                android:inputType="textPassword"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"/>
@@ -60,7 +60,7 @@
             <com.google.android.material.textfield.TextInputEditText
 
                 android:id="@+id/confirmPassEditTxt"
-                android:inputType="textEmailAddress"
+                android:inputType="textPassword"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"/>
@@ -77,7 +77,7 @@
             <com.google.android.material.textfield.TextInputEditText
 
                 android:id="@+id/nameEditTxt"
-                android:inputType="textEmailAddress"
+                android:inputType="text"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"/>

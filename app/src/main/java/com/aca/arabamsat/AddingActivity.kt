@@ -33,7 +33,6 @@ import kotlinx.android.synthetic.main.activity_adding.*
 class AddingActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private val addingViewModel: AddingViewModel by viewModels()
-    private val TAG = "myTag"
     private val PICK_IMAGE = 123
     private var selectedData: Intent? = null
     private var selectedFilePaths: MutableList<String> = mutableListOf()
@@ -266,7 +265,6 @@ class AddingActivity : AppCompatActivity() {
 
 
         data?.clipData?.let {
-            Log.d(TAG, "onActivityResult: ulazim ovde za vise slika")
             var i = 0
             val clipDataSize = it.itemCount
             while (i < clipDataSize) {

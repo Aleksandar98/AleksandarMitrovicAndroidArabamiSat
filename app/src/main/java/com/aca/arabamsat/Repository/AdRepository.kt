@@ -16,25 +16,19 @@ import javax.inject.Inject
 class AdRepository @Inject constructor(
     val db: FirebaseFirestore
 ) : AdRepo{
-
-    private val TAG = "myTag"
-
     override  fun getAllAds():MutableLiveData<List<Ad>>{
         var adListLiveData: MutableLiveData<List<Ad>> = MutableLiveData()
         GlobalScope.launch(Dispatchers.IO) {
 
             db.collection("Ads").addSnapshotListener{snapshot,e ->
                 if (e != null) {
-                    Log.w(TAG, "Listen failed.", e)
                     return@addSnapshotListener
                 }
 
                 if (snapshot != null ) {
-                    Log.d(TAG, "Current data: ${snapshot.toObjects(Ad::class.java).size}")
                     adListLiveData.postValue(snapshot.toObjects(Ad::class.java))
 
                 } else {
-                    Log.d(TAG, "Current data: null")
                 }
             }
 
@@ -62,12 +56,10 @@ class AdRepository @Inject constructor(
 
         newAdRef.set(adObject)
             .addOnSuccessListener { documentReference ->
-                Log.d(TAG, "DocumentSnapshot added with ID: ${adObject.adId}")
                 isUploadingLiveData.postValue(false)
 
             }
             .addOnFailureListener { e ->
-                Log.w(TAG, "Error adding document", e)
             }
 
 

@@ -50,18 +50,21 @@
             android:layout_height="wrap_content"/>
 
         <com.google.android.material.textfield.TextInputEditText
+            android:inputType="number"
             android:maxLength="4"
             android:hint="Year"
             android:id="@+id/yearEdit"
             android:layout_width="300dp"
             android:layout_height="wrap_content"/>
         <com.google.android.material.textfield.TextInputEditText
+            android:inputType="number"
             android:maxLength="11"
             android:hint="Price"
             android:id="@+id/priceEdit"
             android:layout_width="300dp"
             android:layout_height="wrap_content"/>
         <com.google.android.material.textfield.TextInputEditText
+            android:inputType="number"
             android:hint="Phone"
             android:id="@+id/phoneEdit"
             android:layout_width="300dp"

@@ -3,6 +3,7 @@ package com.aca.arabamsat.Repository
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.aca.arabamsat.Interfaces.UserRepo
 import com.aca.arabamsat.Models.Ad
 import com.aca.arabamsat.Models.UploadIntent
 import com.google.firebase.firestore.FirebaseFirestore
@@ -19,12 +20,11 @@ class UserRepository @Inject constructor(
     val db: FirebaseFirestore,
     val authRepository: AuthRepository,
     val storageRef: StorageReference
-) {
+): UserRepo {
 
-    val TAG: String = "myTag"
     var isAdFavoriteLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
-    fun getAllFavoriteAds(): MutableLiveData<ArrayList<Ad>> {
+    override fun getAllFavoriteAds(): MutableLiveData<ArrayList<Ad>> {
 
         val userId = authRepository.firebaseAuth.currentUser?.uid
 
@@ -51,7 +51,7 @@ class UserRepository @Inject constructor(
         return favAdsListLiveData
     }
 
-    fun isAdFavorite(adId: String): MutableLiveData<Boolean> {
+    override fun isAdFavorite(adId: String): MutableLiveData<Boolean> {
         val currentUserId = authRepository.firebaseAuth.currentUser?.uid
 
         currentUserId?.let {
@@ -71,7 +71,7 @@ class UserRepository @Inject constructor(
         return isAdFavoriteLiveData
     }
 
-    fun addToFavorite(adId: String) {
+    override fun addToFavorite(adId: String) {
 
         val currentUserId = authRepository.firebaseAuth.currentUser?.uid
 
@@ -98,7 +98,7 @@ class UserRepository @Inject constructor(
 
     }
 
-    fun uploadCachedImages() {
+     fun uploadCachedImages() {
         val currentUserId = authRepository.firebaseAuth.currentUser?.uid
 
         db.collection("UploadIntents").whereEqualTo("userId", currentUserId)
@@ -125,7 +125,6 @@ class UserRepository @Inject constructor(
 
                 val uploadTask = filePath.let { it1 -> carImagesRef.putFile(file).await() }
                 val url: Uri = carImagesRef.downloadUrl.await()
-                Log.d(TAG, "uploadImage: DOBIJENI URL ${url}")
                 listUploadedUris.add(url.toString())
 
             }
@@ -134,7 +133,6 @@ class UserRepository @Inject constructor(
                 .update("pictures", listUploadedUris)
                 .addOnSuccessListener {
                     deleteUploadIntent(intent)
-                    Log.d(TAG, "uploadAd: DONE UPLOADING")
                 }
         }
     }

@@ -15,14 +15,12 @@ class LoginViewModel @Inject constructor(
     val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private var authenticatedUserLiveData = MutableLiveData<User>()
 
-//    fun getAuthenticatedUser():LiveData<User>{
-//        return authenticatedUserLiveData
-//    }
-
-    fun signInWithEmailAndPassword(email: String, pass: String): MutableLiveData<User> {
-        return authRepository.signInUserEmail(email,pass)
+    fun signInWithEmailAndPassword(email: String, pass: String): MutableLiveData<String> {
+        if(email.isNotEmpty() && email.isNotBlank() && pass.isNotEmpty() && pass.isNotBlank())
+            return authRepository.signInUserEmail(email,pass)
+        else
+            return MutableLiveData("Email or password is empty")
     }
 
     fun signInFacebook(accessToken: AccessToken?) {
@@ -36,11 +34,15 @@ class LoginViewModel @Inject constructor(
         return authRepository.isLogedIn()
     }
 
-    fun sendPasswordResetMail() {
-        authRepository.sendPasswordResetMail()
+    fun sendPasswordResetMail(email:String) {
+        if(email.isNotEmpty() && email.isNotBlank())
+        authRepository.sendPasswordResetMail(email)
     }
 
     fun createUser(email: String, password: String,name:String):LiveData<Boolean> {
-        return authRepository.crateUser(email,password,name)
+        if(email.isNotEmpty() && email.isNotBlank() && password.isNotEmpty() && password.isNotBlank() && name.isNotEmpty() && name.isNotBlank())
+            return authRepository.crateUser(email,password,name)
+        else
+            return MutableLiveData(false)
     }
 }

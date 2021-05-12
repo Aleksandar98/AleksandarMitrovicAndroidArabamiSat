@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.aca.arabamsat.Interfaces.UserRepo
 import com.aca.arabamsat.Repository.AdRepository
 import com.aca.arabamsat.Repository.AuthRepository
 import com.aca.arabamsat.Repository.UserRepository
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    val userRepository: UserRepository
+    val userRepository: UserRepo
 ): ViewModel(){
 
     fun addAdToFavorite(adId:String){
